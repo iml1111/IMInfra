@@ -27,7 +27,7 @@ eks워크샵에 다루는 샘플 템플릿임. 개인적으로 이쪽이 좀 더
 (NEW_VPC3AZ.yml의 경우, 기존 VPC3AZ에서 퍼블릭 서브넷이 6개로 증가한 예제임.)
 ```
 aws cloudformation deploy \
-  --stack-name "eksworkshop" \
-  --template-file "EKSVPC3AZ.yml" \
+  --stack-name "my-eks-vpc-stack" \
+  --template-file "VPC3AZ.yml" \
   --capabilities CAPABILITY_NAMED_IAM 
 ```
