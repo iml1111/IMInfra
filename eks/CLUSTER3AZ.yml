@@ -4,7 +4,7 @@ kind: ClusterConfig
 metadata:
   name: Tony-Test
   region: ap-northeast-2
-  version: "1.21"  
+  version: "1.22"  
 vpc: 
   id: vpc-0171b3b786cb62751
   subnets:

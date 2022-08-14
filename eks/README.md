@@ -52,6 +52,9 @@ ssh 키의 경우 SSM을 사용해서 웹 console을 통해서도 접속이 가�
 # 생성된 값들을 참조해서 CLUSTER*.yml을 작성한 후, 적절한 클러스터 config 실행.
 # 해당 예제는 VPC3AZ.yml과 대응됨.
 eksctl create cluster --config-file=./CLUSTER3AZ.yml
+
+# 만약 반대로 클러스터를 죽이고 싶다면,
+eksctl delete cluster --name <CLUSTER_NAME>
 ```
 위 예제 `CLUSTER3AZ.yml`로 실행시킨 경우,
 퍼블릭/프라이빗 노드 그룹(총 2개의 그룹)이 3개의 AZ에 포진된 형태로 형성됨.
@@ -113,3 +116,6 @@ kubectl apply -f aws-auth-cm.yaml
 ```
 kubectl edit configmap aws-auth --namespace kube-system
 ```
+
+# References
+- https://eksctl.io/introduction/
