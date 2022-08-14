@@ -23,11 +23,8 @@ aws cloudformation create-stack \
 ```
 
 ### VPC[*]AZ.yml
-<br>
 [EKS 워크샵 VPC 설정 링크](https://awskocaptain.gitbook.io/aws-builders-eks/3.-vpc)
-<br>
 [myeks 깃허브](https://github.com/whchoi98/myeks)
-<br>
 eks워크샵에 다루는 샘플 템플릿임. 개인적으로 이쪽이 좀 더 프로덕션에 가깝다고 생각함.
 그외에 더 다양한 템플릿은 myeks 깃허브에서 확인 가능함.
 (NEW_VPC3AZ.yml의 경우, 기존 VPC3AZ에서 퍼블릭 서브넷이 6개로 증가한 예제임.)
@@ -49,9 +46,8 @@ eks 클러스터를 생성하기 위해 사전에 설정한 값들을 yml에서 
 ### 노드 그룹의 SSH 키 및 KMS Encryption 설정
 필요한 경우, 얘들도 해줄 필요가 있는데 없어도 된다면 일단 나중에 하기로 함 (TODO)
 ssh 키의 경우 SSM을 사용해서 웹 console을 통해서도 접속이 가능하기 때문에 꼭 할 필요는 없음.
-<br>
 [eks 인증/자격증명 및 환경 구성](https://awskocaptain.gitbook.io/aws-builders-eks/2.)
-<br>
+
 ```
 # 생성된 값들을 참조해서 CLUSTER*.yml을 작성한 후, 적절한 클러스터 config 실행.
 # 해당 예제는 VPC3AZ.yml과 대응됨.
