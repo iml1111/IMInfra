@@ -119,3 +119,7 @@ kubectl edit configmap aws-auth --namespace kube-system
 
 # References
 - https://eksctl.io/introduction/
+- https://catalog.us-east-1.prod.workshops.aws/workshops/9c0aa9ab-90a9-44a6-abe1-8dff360ae428/ko-KR/10-intro
+- https://docs.aws.amazon.com/ko_kr/eks/latest/userguide/what-is-eks.html
+- https://whchoi98.gitbook.io/k8s/
+- https://awskocaptain.gitbook.io/aws-builders-eks/
