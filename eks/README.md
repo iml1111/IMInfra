@@ -25,6 +25,7 @@ aws cloudformation create-stack \
 ### VPC[*]AZ.yml
 - [EKS 워크샵 VPC 설정 링크](https://awskocaptain.gitbook.io/aws-builders-eks/3.-vpc)
 - [myeks 깃허브](https://github.com/whchoi98/myeks)
+
 eks워크샵에 다루는 샘플 템플릿임. 개인적으로 이쪽이 좀 더 프로덕션에 가깝다고 생각함.
 그외에 더 다양한 템플릿은 myeks 깃허브에서 확인 가능함.
 (NEW_VPC3AZ.yml의 경우, 기존 VPC3AZ에서 퍼블릭 서브넷이 6개로 증가한 예제임.)
