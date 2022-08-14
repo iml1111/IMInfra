@@ -12,7 +12,7 @@
 이미 만들어진 다양한 VPC 템플릿이 있는데 이 중에서 적절한 걸 골라서 해봅시다.
 
 ### EKS_DOC_SAMPLE_VPC.yml
-[EKS 클러스터 도큐먼트 링크](https://docs.aws.amazon.com/ko_kr/eks/latest/userguide/getting-started-console.html)
+- [EKS 클러스터 도큐먼트 링크](https://docs.aws.amazon.com/ko_kr/eks/latest/userguide/getting-started-console.html)
 EKS 도큐먼트에서 공개되어 있는 VPC 생성 템플릿임. 아래와 같은 명령어로 실행가능함.
 region 및 stack_name에 적절한 이름을 넣어서 실행가능함.
 ```
@@ -23,8 +23,8 @@ aws cloudformation create-stack \
 ```
 
 ### VPC[*]AZ.yml
-[EKS 워크샵 VPC 설정 링크](https://awskocaptain.gitbook.io/aws-builders-eks/3.-vpc)
-[myeks 깃허브](https://github.com/whchoi98/myeks)
+- [EKS 워크샵 VPC 설정 링크](https://awskocaptain.gitbook.io/aws-builders-eks/3.-vpc)
+- [myeks 깃허브](https://github.com/whchoi98/myeks)
 eks워크샵에 다루는 샘플 템플릿임. 개인적으로 이쪽이 좀 더 프로덕션에 가깝다고 생각함.
 그외에 더 다양한 템플릿은 myeks 깃허브에서 확인 가능함.
 (NEW_VPC3AZ.yml의 경우, 기존 VPC3AZ에서 퍼블릭 서브넷이 6개로 증가한 예제임.)
@@ -46,8 +46,7 @@ eks 클러스터를 생성하기 위해 사전에 설정한 값들을 yml에서 
 ### 노드 그룹의 SSH 키 및 KMS Encryption 설정
 필요한 경우, 얘들도 해줄 필요가 있는데 없어도 된다면 일단 나중에 하기로 함 (TODO)
 ssh 키의 경우 SSM을 사용해서 웹 console을 통해서도 접속이 가능하기 때문에 꼭 할 필요는 없음.
-[eks 인증/자격증명 및 환경 구성](https://awskocaptain.gitbook.io/aws-builders-eks/2.)
-
+- [eks 인증/자격증명 및 환경 구성](https://awskocaptain.gitbook.io/aws-builders-eks/2.)
 ```
 # 생성된 값들을 참조해서 CLUSTER*.yml을 작성한 후, 적절한 클러스터 config 실행.
 # 해당 예제는 VPC3AZ.yml과 대응됨.
@@ -88,7 +87,7 @@ aws-auth라는 configmap이 이미 만들어져 있을수도 있고 아닐수도
 
 ### aws-auth configmap이 없을 경우
 동봉된 `aws-auth-cm.yml` 파일에 자신이 원하는 user 혹은 role 정보를 작성함.
-[User or Role 작성 참고 링크](https://aws.amazon.com/ko/premiumsupport/knowledge-center/eks-api-server-unauthorized-error/)
+- [User or Role 작성 참고 링크](https://aws.amazon.com/ko/premiumsupport/knowledge-center/eks-api-server-unauthorized-error/)
 적절히 잘 작성을 완료해준 아래와 같이 실행하면 됨.
 ```
 """
