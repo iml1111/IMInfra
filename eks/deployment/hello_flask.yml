@@ -1,36 +1,36 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: node-test-01
+  name: hello-flask-deployment
   labels:
-    app: node-test-01
+    app: hello-flask
 #name space change 
-  namespace: node-test-01
+  namespace: nodeport-sample
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: node-test-01
+      app: hello-flask
   template:
     metadata:
       labels:
-        app: node-test-01
+        app: hello-flask
     spec:
       containers:
-      - image: <IMAGE:TAG>
+      - image: iml1111/hello_flask
         imagePullPolicy: Always
-        name: node-test-01
+        name: hello-flask
         ports:
-        - containerPort: 80
+        - containerPort: 5000
           protocol: TCP
         readinessProbe:
           tcpSocket:
-            port: 80
+            port: 5000
           initialDelaySeconds: 5
           periodSeconds: 10
         livenessProbe:
           tcpSocket:
-            port: 80
+            port: 5000
           initialDelaySeconds: 15
           periodSeconds: 20
 #add nodeSelector

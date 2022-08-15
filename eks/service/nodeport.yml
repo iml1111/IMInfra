@@ -5,7 +5,7 @@ metadata:
   namespace: node-test-01
 spec:
   selector:
-    app: node-test-01
+    app: node-test-01 # 뭘로 찾는 걸까?
   type: NodePort
   ports:
    -  protocol: TCP
