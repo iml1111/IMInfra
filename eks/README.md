@@ -1,13 +1,19 @@
 # EKS
 
+
+
 ## Requirements
+
 아래 툴들은 알아서 설치합시다.
 
 - AWS CLI
 - kubectl
 - eksctl
 
+
+
 ## VPC 생성하기
+
 먼저 cloud formation으로 적절한 VPC 세팅을 구축합니다.
 이미 만들어진 다양한 VPC 템플릿이 있는데 이 중에서 적절한 걸 골라서 해봅시다.
 
@@ -42,7 +48,9 @@ aws cloudformation deploy \
 그외에 클러스터를 위한 보안그룹이 추가로 1개 더 생겨남.
 
 
+
 ## EKS Cluster & 노드그룹 생성하기
+
 eks 클러스터를 생성하기 위해 사전에 설정한 값들을 yml에서 써줄 필요가 있음.
 
 ### 노드 그룹의 SSH 키 및 KMS Encryption 설정
@@ -61,7 +69,10 @@ eksctl delete cluster --name <CLUSTER_NAME>
 퍼블릭/프라이빗 노드 그룹(총 2개의 그룹)이 3개의 AZ에 포진된 형태로 형성됨.
 노드 그룹의 각 캐퍼시티는 현재는 2 ~ 4개 사이이며, t2.medium 인스턴스를 사용함.
 
+
+
 ## Cluster와 cli 연동 확인하기
+
 해당 클러스터와 kubectl이 통신할 수 있도록 awscli를 통해 config 수정.
 ```
 aws eks update-kubeconfig \
@@ -76,7 +87,10 @@ NAME         TYPE        CLUSTER-IP   EXTERNAL-IP
 kubernetes   ClusterIP   10.100.0.1   <none> 
 ```
 
+
+
 ## 다른 계정에서 EKS Cluster에 접근 권한 부여하기
+
 초기 클러스터를 만든 당시에는 클러스터를 만든 본인 관리자 밖에 콘솔 및 cli에서 접근 못함.
 추가적으로 IAM 사용자나 ROLE를 늘려주고 싶을 경우 2가지 방법이 있음.
 
@@ -118,9 +132,18 @@ kubectl apply -f ./configmap/aws-auth-cm.yaml
 kubectl edit configmap aws-auth --namespace kube-system
 ```
 
-[NodePort에 대한 개념 정리](https://yoonchang.tistory.com/49)
+
+
+## Nodeport로 간단 로드밸런싱 서비스 배포하기
+
+- [NodePort에 대한 개념 정리](https://yoonchang.tistory.com/49)
+
+
+
+
 
 # References
+
 - https://eksctl.io/introduction/
 - https://catalog.us-east-1.prod.workshops.aws/workshops/9c0aa9ab-90a9-44a6-abe1-8dff360ae428/ko-KR/10-intro
 - https://docs.aws.amazon.com/ko_kr/eks/latest/userguide/what-is-eks.html
