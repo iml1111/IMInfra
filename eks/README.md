@@ -13,13 +13,14 @@
 
 ### EKS_DOC_SAMPLE_VPC.yml
 - [EKS 클러스터 도큐먼트 링크](https://docs.aws.amazon.com/ko_kr/eks/latest/userguide/getting-started-console.html)
+
 EKS 도큐먼트에서 공개되어 있는 VPC 생성 템플릿임. 아래와 같은 명령어로 실행가능함.
 region 및 stack_name에 적절한 이름을 넣어서 실행가능함.
 ```
 aws cloudformation create-stack \
   --region ap-northeast-2 \
   --stack-name my-eks-vpc-stack \
-  --template-file EKS_DOC_SAMPLE_VPC.yml
+  --template-file ./vpc/EKS_DOC_SAMPLE_VPC.yml
 ```
 
 ### VPC[*]AZ.yml
@@ -32,7 +33,7 @@ eks워크샵에 다루는 샘플 템플릿임. 개인적으로 이쪽이 좀 더
 ```
 aws cloudformation deploy \
   --stack-name "my-eks-vpc-stack" \
-  --template-file "VPC3AZ.yml" \
+  --template-file ./vpc/VPC3AZ.yml \
   --capabilities CAPABILITY_NAMED_IAM 
 ```
 위 `VPC3AZ.yml`로 생성한 경우,
@@ -51,7 +52,7 @@ ssh 키의 경우 SSM을 사용해서 웹 console을 통해서도 접속이 가�
 ```
 # 생성된 값들을 참조해서 CLUSTER*.yml을 작성한 후, 적절한 클러스터 config 실행.
 # 해당 예제는 VPC3AZ.yml과 대응됨.
-eksctl create cluster --config-file=./CLUSTER3AZ.yml
+eksctl create cluster --config-file=./cluster/CLUSTER3AZ.yml
 
 # 만약 반대로 클러스터를 죽이고 싶다면,
 eksctl delete cluster --name <CLUSTER_NAME>
@@ -106,7 +107,7 @@ data:
 	      - system:masters
 """
 
-kubectl apply -f aws-auth-cm.yaml
+kubectl apply -f ./configmap/aws-auth-cm.yaml
 ```
 
 ### aws-auth configmap이 있을 경우
