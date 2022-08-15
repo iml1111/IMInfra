@@ -117,6 +117,8 @@ kubectl apply -f aws-auth-cm.yaml
 kubectl edit configmap aws-auth --namespace kube-system
 ```
 
+[NodePort에 대한 개념 정리](https://yoonchang.tistory.com/49)
+
 # References
 - https://eksctl.io/introduction/
 - https://catalog.us-east-1.prod.workshops.aws/workshops/9c0aa9ab-90a9-44a6-abe1-8dff360ae428/ko-KR/10-intro
