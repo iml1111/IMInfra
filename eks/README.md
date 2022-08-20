@@ -186,7 +186,7 @@ kubectl rollout history deployment hello-flask-deployment -n nodeport-sample
 # 해당 디플로이먼트의 롤링 업데이트 상황 확인
 kubectl rollout status deployment hello-flask-deployment -n nodeport-sample
 ```
-
+모든 업데이트의 자동 정책은 롤링 업데이트됨.
 
 # References
 
