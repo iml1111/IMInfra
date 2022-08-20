@@ -68,7 +68,6 @@ eksctl delete cluster --name <CLUSTER_NAME>
 위 예제 `CLUSTER3AZ.yml`로 실행시킨 경우,
 퍼블릭/프라이빗 노드 그룹(총 2개의 그룹)이 3개의 AZ에 포진된 형태로 형성됨.
 노드 그룹의 각 캐퍼시티는 현재는 2 ~ 4개 사이이며, t2.medium 인스턴스를 사용함.
-```
 
 
 ## Cluster와 cli 연동 확인하기
