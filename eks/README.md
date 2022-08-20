@@ -176,10 +176,13 @@ EC2 대시보드 접근 해야 함.
 ```
 # apply로 업데이트하기 (그냥 yml 파일 수정해서 apply 하면 됨, 가급적이면 이게 이상적일듯)
 kubectl apply -f ./deployment/hello-flask.yml
+
 # hello-flask-deployment 디플로이먼트의 <컨테이너>=<새로운_이미지>로 롤링 업데이트하기
 kubectl set image deployment hello-flask-deployment hello-flask=iml1111/hello_flask:latest -n nodeport-sample
+
 # 해당 디플로이먼트의 업데이트 히스토리 조회
 kubectl rollout history deployment hello-flask-deployment -n nodeport-sample
+
 # 해당 디플로이먼트의 롤링 업데이트 상황 확인
 kubectl rollout status deployment hello-flask-deployment -n nodeport-sample
 ```
