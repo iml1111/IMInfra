@@ -137,7 +137,9 @@ kubectl edit configmap aws-auth --namespace kube-system
 - [NodePort에 대한 개념 정리](https://yoonchang.tistory.com/49)
 
 노드포트는 가장 쉽게 밖에 파드를 노출시킬 수 있는 방법입니다?(카더라)
+
 노드 그룹에 첫번째 파드를 배포해봅시다.
+
 ```
 # nodeport-sample이라는 이름의 네임스페이스 생성
 kubectl create namespace nodeport-sample
@@ -153,7 +155,7 @@ kubectl apply -f ./deployment/hello_flask.yml
 kubectl -n nodeport-sample get pods -o wide
 ```
 
-
+노드포트 서비스를 배포해보자.
 
 
 
