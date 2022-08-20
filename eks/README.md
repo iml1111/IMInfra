@@ -185,6 +185,14 @@ kubectl rollout status deployment hello-flask-deployment -n nodeport-sample
 ```
 모든 업데이트의 자동 정책은 롤링 업데이트됨.
 
+## ECR 프라이빗 레파지토리
+그냥 쉽게 됐으면 좋겠다..
+
+## ALB Ingress 배포하기
+왜 써야 하는가?
+
+
+
 # References
 
 - https://eksctl.io/introduction/
