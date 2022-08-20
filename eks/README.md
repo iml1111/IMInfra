@@ -149,6 +149,9 @@ kubectl get namespace
 # 만약 yml에 네임스페이스가 선언되어 있다면 -n을 스킵해도 됨.
 kubectl -n nodeport-sample apply -f ./deployment/hello_flask.yml
 kubectl apply -f ./deployment/hello_flask.yml
+
+# 배포된 pod 확인해보기
+kubectl -n nodeport-sample get pods -o wide
 ```
 
 
