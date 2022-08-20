@@ -185,6 +185,8 @@ kubectl rollout status deployment hello-flask-deployment -n nodeport-sample
 ```
 모든 업데이트의 자동 정책은 롤링 업데이트됨.
 
+- [디플로이먼트 업데이트](https://kubernetes.io/ko/docs/concepts/workloads/controllers/deployment/#%EB%94%94%ED%94%8C%EB%A1%9C%EC%9D%B4%EB%A8%BC%ED%8A%B8-%EC%97%85%EB%8D%B0%EC%9D%B4%ED%8A%B8)
+
 ## 노드그룹 설정 변경하기
 
 적고 위로 옮겨야 할듯..
