@@ -154,9 +154,19 @@ kubectl apply -f ./deployment/hello_flask.yml
 # 배포된 pod 확인해보기
 kubectl -n nodeport-sample get pods -o wide
 ```
-
 노드포트 서비스를 배포해보자.
+```
+kubectl apply -f ./service/hello_flask_nodeport.yml
+kubectl -n nodeport-sample get svc -o wide
+```
+이제 접속을 해야하는데 노출된 Nodeport에 접근하려면 해당 EC2 IP에 직접 접근할 수 있음.
+EC2 대시보드 접근 해야 함.
 
+- [노드 포트 시험하기](https://whchoi98.gitbook.io/k8s/eks-1/nodeport#2.nodeport-service)
+
+위 링크에서 시작하는 이미지 설명을 따라가서, 보안그룹을 설정해주어야 함. 
+
+(맨처음 만든 노드그룹들은 해당 설령 퍼블릭이라도 어떤 포트도 외부에 열려있지 않기 때문임)
 
 
 # References
