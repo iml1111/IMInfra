@@ -135,6 +135,7 @@ kubectl edit configmap aws-auth --namespace kube-system
 
 ## Nodeport로 간단 로드밸런싱 서비스 배포하기
 
+- [Nodeport 기반 배포](https://whchoi98.gitbook.io/k8s/eks-1/nodeport)
 - [NodePort에 대한 개념 정리](https://yoonchang.tistory.com/49)
 
 

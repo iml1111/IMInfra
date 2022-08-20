@@ -4,7 +4,6 @@ metadata:
   name: hello-flask-deployment
   labels:
     app: hello-flask
-#name space change 
   namespace: nodeport-sample
 spec:
   replicas: 3
@@ -33,7 +32,6 @@ spec:
             port: 5000
           initialDelaySeconds: 15
           periodSeconds: 20
-#add nodeSelector
       nodeSelector:
         nodegroup-type: "managed-frontend-workloads"
         
