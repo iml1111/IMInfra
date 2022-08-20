@@ -68,7 +68,7 @@ eksctl delete cluster --name <CLUSTER_NAME>
 위 예제 `CLUSTER3AZ.yml`로 실행시킨 경우,
 퍼블릭/프라이빗 노드 그룹(총 2개의 그룹)이 3개의 AZ에 포진된 형태로 형성됨.
 노드 그룹의 각 캐퍼시티는 현재는 2 ~ 4개 사이이며, t2.medium 인스턴스를 사용함.
-
+```
 
 
 ## Cluster와 cli 연동 확인하기
@@ -82,7 +82,7 @@ aws eks update-kubeconfig \
 아래와 같은 느낌의 결과가 나온다면 클러스터의 접속에 성공한 것임.
 만약 안될 경우, 클러스터를 만든 IAM 사용자와 현재 접속하려는 사용자가 일치하는지 확인 필요.
 ```
-> kubectl get svc
+$ kubectl get svc
 NAME         TYPE        CLUSTER-IP   EXTERNAL-IP 
 kubernetes   ClusterIP   10.100.0.1   <none> 
 ```
@@ -120,7 +120,6 @@ data:
 	    groups:
 	      - system:masters
 """
-
 kubectl apply -f ./configmap/aws-auth-cm.yaml
 ```
 
