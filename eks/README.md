@@ -44,7 +44,6 @@ aws cloudformation deploy \
 그외에 클러스터를 위한 보안그룹이 추가로 1개 더 생겨남.
 
 
-
 ## EKS Cluster & 노드그룹 생성하기
 
 eks 클러스터를 생성하기 위해 사전에 설정한 값들을 yml에서 써줄 필요가 있음.
@@ -81,8 +80,6 @@ $ kubectl get svc
 NAME         TYPE        CLUSTER-IP   EXTERNAL-IP 
 kubernetes   ClusterIP   10.100.0.1   <none> 
 ```
-
-
 
 ## 다른 계정에서 EKS Cluster에 접근 권한 부여하기
 
