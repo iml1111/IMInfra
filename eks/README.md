@@ -1,7 +1,5 @@
 # EKS
 
-
-
 ## Requirements
 
 아래 툴들은 알아서 설치합시다.
@@ -9,8 +7,6 @@
 - AWS CLI
 - kubectl
 - eksctl
-
-
 
 ## VPC 생성하기
 
@@ -131,7 +127,6 @@ kubectl edit configmap aws-auth --namespace kube-system
 ```
 
 
-
 ## Nodeport로 간단 로드밸런싱 서비스 배포하기
 - [Nodeport 기반 배포](https://whchoi98.gitbook.io/k8s/eks-1/nodeport)
 - [NodePort에 대한 개념 정리](https://yoonchang.tistory.com/49)
@@ -142,21 +137,25 @@ kubectl edit configmap aws-auth --namespace kube-system
 
 ```
 # nodeport-sample이라는 이름의 네임스페이스 생성
+# 앞으로 -n nodeport-sample 은 해당 네임스페이스에서 동작한다는 걸 의미함.
 kubectl create namespace nodeport-sample
 
 # 현재 존재하는 네임스페이스 조회
 kubectl get namespace
 
 # 만약 yml에 네임스페이스가 선언되어 있다면 -n을 스킵해도 됨.
-kubectl -n nodeport-sample apply -f ./deployment/hello_flask.yml
-kubectl apply -f ./deployment/hello_flask.yml
+kubectl -n nodeport-sample apply -f ./deployment/hello-flask.yml
+kubectl apply -f ./deployment/hello-flask.yml
 
 # 배포된 pod 확인해보기
 kubectl -n nodeport-sample get pods -o wide
+
+# 배포된 디플로이먼트(nodeport-sample) 확인해보기
+kubectl get deployment hello-flask-deployment -n nodeport-sample
 ```
 노드포트 서비스를 배포해보자.
 ```
-kubectl apply -f ./service/hello_flask_nodeport.yml
+kubectl apply -f ./service/hello-flask-nodeport.yml
 kubectl -n nodeport-sample get svc -o wide
 ```
 이제 접속을 해야하는데 노출된 Nodeport에 접근하려면 해당 EC2 IP에 직접 접근할 수 있음.
@@ -169,6 +168,21 @@ EC2 대시보드 접근 해야 함.
 (맨처음 만든 노드그룹들은 해당 설령 퍼블릭이라도 어떤 포트도 외부에 열려있지 않기 때문임)
 
 기존 보안그룹에 인바운드 규칙을 수정하는 것도 안될 것 없을 것 같지만 자체 관리를 위해 새로운 보안그룹을 생성해서 각각의 EC2에 추가해주는 걸 추천함. (안전!)
+
+
+## 파드 업데이트하기
+어플리케이션의 업데이트란, 해당 이미지의 변경을 의미함.
+- **이미지의 이름이나 태그가 바뀌지 않았는데 새로 pull받아서 리로드하는 방법이 있는지 아직 모르겠음**
+```
+# apply로 업데이트하기 (그냥 yml 파일 수정해서 apply 하면 됨, 가급적이면 이게 이상적일듯)
+kubectl apply -f ./deployment/hello-flask.yml
+# hello-flask-deployment 디플로이먼트의 <컨테이너>=<새로운_이미지>로 롤링 업데이트하기
+kubectl set image deployment hello-flask-deployment hello-flask=iml1111/hello_flask:latest -n nodeport-sample
+# 해당 디플로이먼트의 업데이트 히스토리 조회
+kubectl rollout history deployment hello-flask-deployment -n nodeport-sample
+# 해당 디플로이먼트의 롤링 업데이트 상황 확인
+kubectl rollout status deployment hello-flask-deployment -n nodeport-sample
+```
 
 
 # References
