@@ -134,9 +134,22 @@ kubectl edit configmap aws-auth --namespace kube-system
 
 
 ## Nodeport로 간단 로드밸런싱 서비스 배포하기
-
 - [Nodeport 기반 배포](https://whchoi98.gitbook.io/k8s/eks-1/nodeport)
 - [NodePort에 대한 개념 정리](https://yoonchang.tistory.com/49)
+
+노드포트는 가장 쉽게 밖에 파드를 노출시킬 수 있는 방법입니다?(카더라)
+노드 그룹에 첫번째 파드를 배포해봅시다.
+```
+# nodeport-sample이라는 이름의 네임스페이스 생성
+kubectl create namespace nodeport-sample
+
+# 현재 존재하는 네임스페이스 조회
+kubectl get namespace
+
+# 만약 yml에 네임스페이스가 선언되어 있다면 -n을 스킵해도 됨.
+kubectl -n nodeport-sample apply -f ./deployment/hello_flask.yml
+kubectl apply -f ./deployment/hello_flask.yml
+```
 
 
 
