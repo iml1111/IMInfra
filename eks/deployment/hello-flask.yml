@@ -16,7 +16,7 @@ spec:
         app: hello-flask
     spec:
       containers:
-      - image: iml1111/hello_flask
+      - image: iml1111/hello_flask:latest
         imagePullPolicy: Always
         name: hello-flask
         ports:
