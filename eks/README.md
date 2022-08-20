@@ -187,16 +187,32 @@ kubectl rollout status deployment hello-flask-deployment -n nodeport-sample
 
 - [디플로이먼트 업데이트](https://kubernetes.io/ko/docs/concepts/workloads/controllers/deployment/#%EB%94%94%ED%94%8C%EB%A1%9C%EC%9D%B4%EB%A8%BC%ED%8A%B8-%EC%97%85%EB%8D%B0%EC%9D%B4%ED%8A%B8)
 
+## ECR 프라이빗 레파지토리 & 서비스 배포 한번에 하기
+
+ECR에 있으면 그냥 한번에 됨.
+
+```
+kubectl apply -f ./deployment/some-private.yml
+```
+
+`some-private.yml`에는 ECR에 있는 프라이빗 이미지와 해당 파드를 연결시킬 노드포트 서비스가 한번에 작성되어 있음. 걍 저거 한 줄 치면 바로 배포됨.
+
+
+
 ## 노드그룹 설정 변경하기
 
 적고 위로 옮겨야 할듯..
 
-## ECR 프라이빗 레파지토리
 
-그냥 쉽게 됐으면 좋겠다..
 
 ## ALB Ingress 배포하기
-왜 써야 하는가?
+노드포트로도 기본 로드밸런서는 되는거 같은데 이걸 왜 써야 하는가?
+
+
+
+## 로그 통합 관리
+
+k9s에서 각 파드별로는 되는 것 같은데, 통합은 어떻게 해야 하는가?
 
 
 
