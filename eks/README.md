@@ -214,7 +214,6 @@ kubectl apply -f ./deployment/some-private.yml
 
 
 ## 로그 통합 관리
-
 k9s에서 각 파드별로는 되는 것 같은데, 통합은 어떻게 해야 하는가?
 
 
