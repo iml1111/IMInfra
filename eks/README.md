@@ -190,6 +190,18 @@ kubectl rollout status deployment hello-flask-deployment -n nodeport-sample
 
 - [디플로이먼트 업데이트](https://kubernetes.io/ko/docs/concepts/workloads/controllers/deployment/#%EB%94%94%ED%94%8C%EB%A1%9C%EC%9D%B4%EB%A8%BC%ED%8A%B8-%EC%97%85%EB%8D%B0%EC%9D%B4%ED%8A%B8)
 
+### 업데이트가 실패하는 경우
+당연히 yml 문법이 틀린 경우 애초에 업데이트 배포 자체가 실패하므로 패스.
+그 외에, 업데이트하려는 docker image가 제대로 실행되지 않을 경우, `CrashLoopBackOff`라는 에러를 계속해서 겪을 수 있음.
+계속 k9s에서 해당 상태를 실시간으로 지켜보면 꺼졌다 켰다를 반복하며 터지는 모습 확인.
+
+도커 컨테이너가 정상적으로 작성되지 않았을때 발생하는 거겠지만, 정상적으로 작성한 경우에도 발생하기는 하는듯.
+이유는 잘 모르겠음..
+
+아무튼 이 경우, 그냥 다시 한번 `apply` 나 `set image`e를 실행시켜서 덮어씌워주면 됨.
+
+다행히 이 순간에도 기존 서비스에 영향을 끼치지는 못하는 듯.
+
 ## ECR 프라이빗 레파지토리 & 서비스 배포 한번에 하기
 
 ECR에 있으면 그냥 한번에 됨.
