@@ -218,6 +218,7 @@ kubectl apply -f ./deployment/some-private.yml
 
 - [HorizontalPodAutoscaler 연습](https://kubernetes.io/ko/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/#%EB%8B%A4%EB%A5%B8-%EA%B0%80%EB%8A%A5%ED%95%9C-%EC%8B%9C%EB%82%98%EB%A6%AC%EC%98%A4)
 - [[K8S] Kubernetes의 HPA를 활용한 오토스케일링(Auto Scaling)](https://medium.com/dtevangelist/k8s-kubernetes%EC%9D%98-hpa%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%EC%98%A4%ED%86%A0%EC%8A%A4%EC%BC%80%EC%9D%BC%EB%A7%81-auto-scaling-2fc6aca61c26)
+- [metric-server git](https://github.com/kubernetes-sigs/metrics-server)
 
 파드 오토스케일러라는게 존재하는 듯 함. 기존 디플로이먼트에는 전혀 영향을 끼치지 않고 독자적으로 동작하는 듯.
 
@@ -231,6 +232,16 @@ kubectl get hpa -n nodeport-sample
 ```
 
 해당 코드를 실행시키면, `hello-flask-deployment` 에 연동되어 CPU 유틸라이제이션이 50%를 넘으면 1-10 사이에서 오토스케일링을 실행함.
+
+근데 아직 되지 않음 왜지???
+
+```
+> kubectl get hpa -n nodeport-sample
+NAME              REFERENCE                           TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+hello-flask-hpa   Deployment/hello-flask-deployment   <unknown>/50%   1         10        3          14m
+```
+
+
 
 
 
