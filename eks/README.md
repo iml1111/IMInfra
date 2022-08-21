@@ -202,6 +202,8 @@ kubectl rollout status deployment hello-flask-deployment -n nodeport-sample
 
 다행히 이 순간에도 기존 서비스에 영향을 끼치지는 못하는 듯.
 
+- [포드가 CrashLoopBackOff 상태에 있음](https://aws.amazon.com/ko/premiumsupport/knowledge-center/eks-pod-status-troubleshooting/)
+
 ## ECR 프라이빗 레파지토리 & 서비스 배포 한번에 하기
 
 ECR에 있으면 그냥 한번에 됨.
