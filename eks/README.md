@@ -214,6 +214,7 @@ kubectl apply -f ./deployment/some-private.yml
 
 `some-private.yml`에는 ECR에 있는 프라이빗 이미지와 해당 파드를 연결시킬 노드포트 서비스가 한번에 작성되어 있음. 걍 저거 한 줄 치면 바로 배포됨.
 
+## 레플리카 로드 밸런싱하기
 
 
 ## 클러스터 내부에서 서비스로 통신하기
