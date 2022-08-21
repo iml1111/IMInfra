@@ -167,6 +167,12 @@ EC2 대시보드 접근 해야 함.
 
 기존 보안그룹에 인바운드 규칙을 수정하는 것도 안될 것 없을 것 같지만 자체 관리를 위해 새로운 보안그룹을 생성해서 각각의 EC2에 추가해주는 걸 추천함. (안전!)
 
+### 클러스터 내부에서 서비스로 통신하기
+
+서비스 ymlkubectl get hpa 작성시에 `metadata.name`에 작성된 것을 호스트로, `spec.ports[].port` 를 포트로 해서 클러스터 내부의 서비스들도 접근할 수 있도록 할 수 있음.
+
+- [Service(ClusterIP) 만들기 및 테스트](https://subicura.com/k8s/guide/service.html#service-clusterip-%E1%84%86%E1%85%A1%E1%86%AB%E1%84%83%E1%85%B3%E1%86%AF%E1%84%80%E1%85%B5)
+
 
 
 ## 파드 업데이트하기
@@ -178,7 +184,7 @@ EC2 대시보드 접근 해야 함.
 kubectl apply -f ./deployment/hello-flask.yml
 
 # hello-flask-deployment 디플로이먼트의 <컨테이너>=<새로운_이미지>로 롤링 업데이트하기
-kubectl set image deployment hello-flask-deployment hello-flask=iml1111/hello_flask:latest -n nodeport-sample
+kubectl set image deployment hello-flask-deployment hello-flask=iml1111/hello_flask -n nodeport-sample
 
 # 해당 디플로이먼트의 업데이트 히스토리 조회
 kubectl rollout history deployment hello-flask-deployment -n nodeport-sample
@@ -192,13 +198,7 @@ kubectl rollout status deployment hello-flask-deployment -n nodeport-sample
 
 ### 업데이트가 실패하는 경우
 당연히 yml 문법이 틀린 경우 애초에 업데이트 배포 자체가 실패하므로 패스.
-그 외에, 업데이트하려는 docker image가 제대로 실행되지 않을 경우, `CrashLoopBackOff`라는 에러를 계속해서 겪을 수 있음.
-계속 k9s에서 해당 상태를 실시간으로 지켜보면 꺼졌다 켰다를 반복하며 터지는 모습 확인.
-
-도커 컨테이너가 정상적으로 작성되지 않았을때 발생하는 거겠지만, 정상적으로 작성한 경우에도 발생하기는 하는듯.
-이유는 잘 모르겠음..
-
-아무튼 이 경우, 그냥 다시 한번 `apply` 나 `set image`e를 실행시켜서 덮어씌워주면 됨.
+그 외에, 업데이트하려는 docker image가 제대로 실행되지 않을 경우, `CrashLoopBackOff`라는 에러를 계속해서 겪을 수 있음. 이 경우, 그냥 다시 한번 `apply` 나 `set image`를 실행시켜서 덮어씌워주면 됨.
 
 다행히 이 순간에도 기존 서비스에 영향을 끼치지는 못하는 듯.
 
@@ -214,10 +214,23 @@ kubectl apply -f ./deployment/some-private.yml
 
 `some-private.yml`에는 ECR에 있는 프라이빗 이미지와 해당 파드를 연결시킬 노드포트 서비스가 한번에 작성되어 있음. 걍 저거 한 줄 치면 바로 배포됨.
 
-## 레플리카 로드 밸런싱하기
+## 레플리카 오토 스케일링하기
 
+- [HorizontalPodAutoscaler 연습](https://kubernetes.io/ko/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/#%EB%8B%A4%EB%A5%B8-%EA%B0%80%EB%8A%A5%ED%95%9C-%EC%8B%9C%EB%82%98%EB%A6%AC%EC%98%A4)
+- [[K8S] Kubernetes의 HPA를 활용한 오토스케일링(Auto Scaling)](https://medium.com/dtevangelist/k8s-kubernetes%EC%9D%98-hpa%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%EC%98%A4%ED%86%A0%EC%8A%A4%EC%BC%80%EC%9D%BC%EB%A7%81-auto-scaling-2fc6aca61c26)
 
-## 클러스터 내부에서 서비스로 통신하기
+파드 오토스케일러라는게 존재하는 듯 함. 기존 디플로이먼트에는 전혀 영향을 끼치지 않고 독자적으로 동작하는 듯.
+
+스펙에 맞는 yml을 작성해준 뒤, 실행시켜줌.
+
+```
+kubectl apply -f ./podscaler/hello-flask.yml
+
+# "hpa" 또는 "horizontalpodautoscaler" 둘 다 사용 가능
+kubectl get hpa -n nodeport-sample
+```
+
+해당 코드를 실행시키면, `hello-flask-deployment` 에 연동되어 CPU 유틸라이제이션이 50%를 넘으면 1-10 사이에서 오토스케일링을 실행함.
 
 
 

@@ -16,7 +16,7 @@ spec:
         app: hello-flask
     spec:
       containers:
-      - image: iml1111/hello_flask:v2
+      - image: iml1111/hello_flask:latest
         imagePullPolicy: Always
         name: hello-flask
         ports:
@@ -34,4 +34,4 @@ spec:
           periodSeconds: 20
       nodeSelector:
         nodegroup-type: "managed-frontend-workloads"
-        
+
