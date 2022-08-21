@@ -246,7 +246,7 @@ kubectl get hpa -n nodeport-sample
 
 
 
-## 노드그룹 설정 변경하기
+## 노드그룹 설정 변경하기 (오토스케일링)
 
 적고 위로 옮겨야 할듯..
 
