@@ -218,12 +218,17 @@ kubectl apply -f ./deployment/some-private.yml
 
 - [HorizontalPodAutoscaler 연습](https://kubernetes.io/ko/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/#%EB%8B%A4%EB%A5%B8-%EA%B0%80%EB%8A%A5%ED%95%9C-%EC%8B%9C%EB%82%98%EB%A6%AC%EC%98%A4)
 - [[K8S] Kubernetes의 HPA를 활용한 오토스케일링(Auto Scaling)](https://medium.com/dtevangelist/k8s-kubernetes%EC%9D%98-hpa%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%EC%98%A4%ED%86%A0%EC%8A%A4%EC%BC%80%EC%9D%BC%EB%A7%81-auto-scaling-2fc6aca61c26)
-- [HPA 세팅 실습, 개인적으로 얘가 설명 제일 잘함](https://saramin.github.io/2022-05-17-kubernetes-autoscaling/)
-- [metric-server git](https://github.com/kubernetes-sigs/metrics-server#deployment)
 
 파드 오토스케일러라는게 존재하는 듯 함. 기존 디플로이먼트에는 전혀 영향을 끼치지 않고 독자적으로 동작하는 듯.
 
-스펙에 맞는 yml을 작성해준 뒤, 실행시켜줌.
+### metric-server 세팅하기
+
+오토스케일링을 하기 위해서 노드의 CPU, Memory 메트릭을 수집할 수 있는 애드온 파드가 필요함. 다행히도 쿠버네티스 측에서 거의 반공식적으로 이걸 만들어서 지원함. 그냥 아래 블로그에서 시키는 대로 실행시켜서 세팅하면 됨.
+
+- [HPA 세팅 실습, 개인적으로 얘가 설명 제일 잘함](https://saramin.github.io/2022-05-17-kubernetes-autoscaling/)
+- [metric-server git](https://github.com/kubernetes-sigs/metrics-server#deployment)
+
+그 후, 스펙에 맞는 yml을 작성해준 뒤, 실행시켜줌.
 
 ```
 kubectl apply -f ./podscaler/hello-flask.yml
@@ -239,6 +244,7 @@ kubectl get hpa -n nodeport-sample
 반드시 디플로이먼트에 아래와 같이 명시를 해주어야 함. 이걸 하지 않으면 metric-server가 구축되어 있더라도 지표 수집을 수행하지 않아 unknown이 뜨게 되어 오토스케일링이 되지 않음;;;
 
 ```
+ // 최소한 해당 pod에 CPU를 10% 이상은 할당해줬으면 좋겠다는 뜻.
         resources:
           requests:
             cpu: "100m"
