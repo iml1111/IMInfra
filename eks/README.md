@@ -202,6 +202,10 @@ kubectl apply -f ./deployment/some-private.yml
 
 
 
+## 클러스터 내부에서 서비스로 통신하기
+
+
+
 ## 노드그룹 설정 변경하기
 
 적고 위로 옮겨야 할듯..
