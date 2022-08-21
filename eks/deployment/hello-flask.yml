@@ -19,6 +19,9 @@ spec:
       - image: iml1111/hello_flask:latest
         imagePullPolicy: Always
         name: hello-flask
+        resources:
+          requests:
+            cpu: "100m"
         ports:
         - containerPort: 5000
           protocol: TCP
