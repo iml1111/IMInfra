@@ -259,7 +259,11 @@ kubectl get hpa -n nodeport-sample
 
 
 ## ALB Ingress 배포하기
-노드포트로도 기본 로드밸런서는 되는거 같은데 이걸 왜 써야 하는가?
+- https://whchoi98.gitbook.io/k8s/5.eks-ingress/alb-ingress
+- https://awskocaptain.gitbook.io/aws-builders-eks/6.-eks-ingress#ingress
+- https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.4/deploy/installation/
+
+배포 완료한 뒤에, 다른 문서도 한번씩 훑어보기.
 
 
 
