@@ -4,7 +4,7 @@ metadata:
   name: some-private-deployment
   labels:
     app: some-private
-  namespace: nodeport-sample
+  namespace: ingress-sample
 spec:
   replicas: 3
   selector:

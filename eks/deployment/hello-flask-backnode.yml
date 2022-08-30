@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello-flask-deployment
+  name: hello-flask-backnode-deployment
   labels:
-    app: hello-flask
+    app: hello-flask-backnode
   namespace: ingress-sample
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: hello-flask
+      app: hello-flask-backnode
   template:
     metadata:
       labels:
-        app: hello-flask
+        app: hello-flask-backnode
     spec:
       containers:
       - image: iml1111/hello_flask:latest
         imagePullPolicy: Always
-        name: hello-flask
+        name: hello-flask-backnode
         resources:
           requests:
             cpu: "100m"
@@ -36,5 +36,5 @@ spec:
           initialDelaySeconds: 15
           periodSeconds: 20
       nodeSelector:
-        nodegroup-type: "managed-frontend-workloads"
+        nodegroup-type: "managed-backend-workloads"
 

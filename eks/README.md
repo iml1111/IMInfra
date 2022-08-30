@@ -29,9 +29,10 @@ aws cloudformation create-stack \
 - [EKS 워크샵 VPC 설정 링크](https://awskocaptain.gitbook.io/aws-builders-eks/3.-vpc)
 - [myeks 깃허브](https://github.com/whchoi98/myeks)
 
-eks워크샵에 다루는 샘플 템플릿임. 개인적으로 이쪽이 좀 더 프로덕션에 가깝다고 생각함.
+eks워크샵에 다루는 샘플 템플릿임. **개인적으로 이쪽이 좀 더 프로덕션에 가깝다고 생각**함.
 그외에 더 다양한 템플릿은 myeks 깃허브에서 확인 가능함.
 (NEW_VPC3AZ.yml의 경우, 기존 VPC3AZ에서 퍼블릭 서브넷이 6개로 증가한 예제임.)
+
 ```
 aws cloudformation deploy \
   --stack-name "my-eks-vpc-stack" \
@@ -49,7 +50,7 @@ aws cloudformation deploy \
 eks 클러스터를 생성하기 위해 사전에 설정한 값들을 yml에서 써줄 필요가 있음.
 
 ### 노드 그룹의 SSH 키 및 KMS Encryption 설정
-필요한 경우, 얘들도 해줄 필요가 있는데 없어도 된다면 일단 나중에 하기로 함 (TODO)
+필요한 경우, 얘들도 해줄 필요가 있는데 없어도 된다면 일단 나중에 하기로 함 **(TODO)**
 ssh 키의 경우 SSM을 사용해서 웹 console을 통해서도 접속이 가능하기 때문에 꼭 할 필요는 없음.
 
 - [eks 인증/자격증명 및 환경 구성](https://awskocaptain.gitbook.io/aws-builders-eks/2.)
@@ -63,7 +64,38 @@ eksctl delete cluster --name <CLUSTER_NAME>
 ```
 위 예제 `CLUSTER3AZ.yml`로 실행시킨 경우,
 퍼블릭/프라이빗 노드 그룹(총 2개의 그룹)이 3개의 AZ에 포진된 형태로 형성됨.
-노드 그룹의 각 캐퍼시티는 현재는 2 ~ 4개 사이이며, t2.medium 인스턴스를 사용함.
+노드 그룹의 각 캐퍼시티는 현재는 2 ~ 4개 사이이며, t2.medium 인스턴스를 사용
+
+### 클러스터 설정 갱신하기
+
+- [eksctl upgrade](https://eksctl.io/usage/cluster-upgrade/)
+- [기본 add-on 업데이트하기](https://eksctl.io/usage/addon-upgrade/)
+- [다양한 ClusterConfig 모음](https://github.com/weaveworks/eksctl/tree/main/examples)
+
+원하는 만큼, 기존 클러스터 yml을 수정한 뒤, upgrade를 수행. 
+
+**단 nodegroup에 대한 갱신 정보가 바뀌지는 않는 것 같음..**
+
+```
+eksctl upgrade cluster --config-file <cluster.yaml>
+```
+
+### 노드그룹 설정 변경하기
+
+새로운 노드 그룹을 생성한 뒤, 아래의 명령어로 새로 만드는 것은 가능. 단, 기존의 노드 그룹의 사양 정보를 config 파일 수정만으로 변경하는 방법을 아직 모르겠음.
+
+```
+eksctl create nodegroup --config-file <CLUSTER.YML>
+```
+
+멱등성을 포기하고 `scale` 커맨드로 노드 그룹의 오토스케일링 사양을 변경하는 방법은 아래와 같음.
+
+```
+# Tony-Test 클러스터의 managed-ng-public-01 노드그룹에 2,2,4 오토스케일링 세팅.
+eksctl scale nodegroup --name=managed-ng-public-01 --cluster=Tony-Test --nodes=2 --nodes-min=2 --nodes-max=4
+```
+
+
 
 
 ## Cluster와 cli 연동 확인하기
@@ -250,20 +282,84 @@ kubectl get hpa -n nodeport-sample
             cpu: "100m"
 ```
 
-
-
-## 노드그룹 설정 변경하기 (오토스케일링)
-
-적고 위로 옮겨야 할듯..
-
-
-
 ## ALB Ingress 배포하기
 - https://whchoi98.gitbook.io/k8s/5.eks-ingress/alb-ingress
 - https://awskocaptain.gitbook.io/aws-builders-eks/6.-eks-ingress#ingress
 - https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.4/deploy/installation/
 
+먼저 서비스에 연결한 파드들 띄워서 준비한다.
+
+```
+kubectl create namespace ingress-sample
+
+# public subnet 노드 그룹에 배포 및 서비스 연결
+kubectl apply -f ./deployment/hello-flask.yml
+k apply -f ./service/hello-flask-nodeport.yml # 이쪽은 노드포트
+
+# private subnet 노드 그룹에도 배포
+kubectl apply -f ./deployment/hello-flask-backnode.ym
+```
+
+### AWS LB IAM Policy 생성
+
+ALB Controller IAM 역할을 생성하기 위한 정책.json 파일 다운로드 및 정책 생성.
+
+```
+curl -o iam-policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.3/docs/install/iam_policy.json
+
+# Policy 뭐시기가 출력되면 생성 성공!
+aws iam create-policy \
+    --policy-name AWSLoadBalancerControllerIAMPolicy \
+    --policy-document file://iam-policy.json
+```
+
+### IAM OIDC Provider 및 정책을 연동한 Service Account 생성
+
+이 자격 증명을 사용하여 AWS 서비스 자원들을 Kubernetes 자원들이 사용할 수 있다고 함.
+
+[withOIDC](https://eksctl.io/usage/schema/#iam-withOIDC)라는 옵션이 eksctl에 있던데 나중에 이걸로 한번에 되는지 확인 필요.
+
+```
+eksctl utils associate-iam-oidc-provider \
+    --region ${AWS_REGION} \
+    --cluster ${ekscluster_name} \
+    --approve
+```
+
+아래의 명령어로 확인 가능.
+
+```
+aws eks describe-cluster --name ${ekscluster_name} --query "cluster.identity.oidc.issuer" --output text
+aws iam list-open-id-connect-providers
+```
+
+- [eksctl serviceaccount config 예시](https://github.com/weaveworks/eksctl/blob/main/examples/13-iamserviceaccounts.yaml)
+
+위에서 생성한 정책을 연동시킨 Service Account 생성하기.
+
+ 단, 이것도 eksctl config에 예제가 존재하는 듯 하나 추후에 예제를 직접 생성해서 확인 필요.
+
+```
+eksctl create iamserviceaccount \
+--cluster=<cluster-name> \
+--namespace=kube-system \
+--name=aws-load-balancer-controller \
+--attach-policy-arn=arn:aws:iam::<AWS_ACCOUNT_ID>:policy/AWSLoadBalancerControllerIAMPolicy \
+--override-existing-serviceaccounts \
+--region ap-northeast-2 \
+--approve
+
+# 아래 명령어로 생성 확인 가능
+kubectl get serviceaccounts -n kube-system aws-load-balancer-controller -o yaml
+```
+
+
+
+
+
 배포 완료한 뒤에, 다른 문서도 한번씩 훑어보기.
+
+### private subnet에 배포된 pod에도 로드 밸런싱이 될까?
 
 
 
