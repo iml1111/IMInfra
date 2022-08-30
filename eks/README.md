@@ -152,6 +152,7 @@ kubectl apply -f ./configmap/aws-auth-cm.yaml
 에러가 뜨지 않을 경우, 아래의 명령어를 치면 Editor가 직접 나오게 됨.
 해당 Editor에서 위에서 처음 만들때랑 같은 형식으로 수정해주고 저장해주면 됨.
 저장할때는 `:wq`
+
 ```
 kubectl edit configmap aws-auth --namespace kube-system
 ```
@@ -324,11 +325,8 @@ eksctl utils associate-iam-oidc-provider \
     --region ${AWS_REGION} \
     --cluster ${ekscluster_name} \
     --approve
-```
 
 아래의 명령어로 확인 가능.
-
-```
 aws eks describe-cluster --name ${ekscluster_name} --query "cluster.identity.oidc.issuer" --output text
 aws iam list-open-id-connect-providers
 ```
@@ -351,6 +349,11 @@ eksctl create iamserviceaccount \
 
 # 아래 명령어로 생성 확인 가능
 kubectl get serviceaccounts -n kube-system aws-load-balancer-controller -o yaml
+
+# 아래의 명령어로 삭제 가능?
+eksctl create iamserviceaccount \
+--name=aws-load-balancer-controller \
+--cluster=<cluster-name>
 ```
 
 
