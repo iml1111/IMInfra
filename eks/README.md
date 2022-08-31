@@ -368,18 +368,6 @@ k apply -f ingress/hello-flask-backnode.yml
 TODO: 잉그레스 스펙 문서화 정리하기
 
 
-
-## 로그 통합 관리
-k9s에서 각 파드별로는 되는 것 같은데, 통합은 어떻게 해야 하는가?
-
-
-
-## Helm
-
-
-
-
-
 # References
 
 - https://eksctl.io/introduction/
