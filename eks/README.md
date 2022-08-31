@@ -214,16 +214,14 @@ EC2 대시보드 접근 해야 함.
 ```
 // apply로 업데이트하기 (그냥 yml 파일 수정해서 apply 하면 됨, 가급적이면 이게 이상적일듯)
 kubectl apply -f ./deployment/hello-flask.yml
-
 // hello-flask-deployment 디플로이먼트의 <컨테이너>=<새로운_이미지>로 롤링 업데이트하기
 kubectl set image deployment hello-flask-deployment hello-flask=iml1111/hello_flask -n nodeport-sample
-
 // 해당 디플로이먼트의 업데이트 히스토리 조회
 kubectl rollout history deployment hello-flask-deployment -n nodeport-sample
-
 // 해당 디플로이먼트의 롤링 업데이트 상황 확인
 kubectl rollout status deployment hello-flask-deployment -n nodeport-sample
 ```
+
 모든 업데이트의 자동 정책은 롤링 업데이트됨.
 
 - [디플로이먼트 업데이트](https://kubernetes.io/ko/docs/concepts/workloads/controllers/deployment/#%EB%94%94%ED%94%8C%EB%A1%9C%EC%9D%B4%EB%A8%BC%ED%8A%B8-%EC%97%85%EB%8D%B0%EC%9D%B4%ED%8A%B8)
@@ -264,7 +262,6 @@ kubectl apply -f ./deployment/some-private.yml
 
 ```
 kubectl apply -f ./podscaler/hello-flask.yml
-
 // "hpa" 또는 "horizontalpodautoscaler" 둘 다 사용 가능
 kubectl get hpa -n nodeport-sample
 ```
@@ -293,8 +290,7 @@ ALB Controller IAM 역할을 생성하기 위한 정책.json 파일 다운로드
 
 ```
 curl -o iam-policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.3/docs/install/iam_policy.json
-
-# Policy 뭐시기가 출력되면 생성 성공!
+// Policy 뭐시기가 출력되면 생성 성공!
 aws iam create-policy \
     --policy-name AWSLoadBalancerControllerIAMPolicy \
     --policy-document file://iam-policy.json
@@ -309,7 +305,6 @@ eksctl utils associate-iam-oidc-provider \
     --region ${AWS_REGION} \
     --cluster ${ekscluster_name} \
     --approve
-
 아래의 명령어로 확인 가능.
 aws eks describe-cluster --name ${ekscluster_name} --query "cluster.identity.oidc.issuer" --output text
 aws iam list-open-id-connect-providers
@@ -328,11 +323,9 @@ eksctl create iamserviceaccount \
 --override-existing-serviceaccounts \
 --region ap-northeast-2 \
 --approve
-
-# 아래 명령어로 생성 확인 가능
+// 아래 명령어로 생성 확인 가능
 kubectl get serviceaccounts -n kube-system aws-load-balancer-controller -o yaml
-
-# 아래의 명령어로 삭제 가능?
+// 아래의 명령어로 삭제 가능?
 eksctl create iamserviceaccount \
 --name=aws-load-balancer-controller \
 --cluster=<cluster-name>
@@ -367,13 +360,11 @@ kubectl apply -f v2_4_3_full.yaml
 
 ```
 kubectl create namespace ingress-sample
-
-# public subnet 노드 그룹에 배포 및 서비스 연결
+// public subnet 노드 그룹에 배포 및 서비스 연결
 k apply -f ./deployment/hello-flask.yml
 k apply -f ./service/hello-flask-nodeport.yml
 k apply -f ingress/hello-flask.yml
-
-# private subnet 노드 그룹에도 배포
+// private subnet 노드 그룹에도 배포
 k apply -f ./deployment/hello-flask-backnode.yml
 k apply -f service/hello-flask-backnode-nodeport.yml
 k apply -f ingress/hello-flask-backnode.yml
