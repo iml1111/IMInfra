@@ -55,11 +55,10 @@ ssh 키의 경우 SSM을 사용해서 웹 console을 통해서도 접속이 가�
 
 - [eks 인증/자격증명 및 환경 구성](https://awskocaptain.gitbook.io/aws-builders-eks/2.)
 ```
-# 생성된 값들을 참조해서 CLUSTER*.yml을 작성한 후, 적절한 클러스터 config 실행.
-# 해당 예제는 VPC3AZ.yml과 대응됨.
+// 생성된 값들을 참조해서 CLUSTER*.yml을 작성한 후, 적절한 클러스터 config 실행.
+// 해당 예제는 VPC3AZ.yml과 대응됨.
 eksctl create cluster --config-file=./cluster/CLUSTER3AZ.yml
-
-# 만약 반대로 클러스터를 죽이고 싶다면,
+// 만약 반대로 클러스터를 죽이고 싶다면,
 eksctl delete cluster --name <CLUSTER_NAME>
 ```
 위 예제 `CLUSTER3AZ.yml`로 실행시킨 경우,
