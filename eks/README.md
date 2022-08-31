@@ -166,21 +166,17 @@ kubectl edit configmap aws-auth --namespace kube-system
 노드 그룹에 첫번째 파드를 배포해봅시다.
 
 ```
-# nodeport-sample이라는 이름의 네임스페이스 생성
-# 앞으로 -n nodeport-sample 은 해당 네임스페이스에서 동작한다는 걸 의미함.
+// nodeport-sample이라는 이름의 네임스페이스 생성
+// 앞으로 -n nodeport-sample 은 해당 네임스페이스에서 동작한다는 걸 의미함.
 kubectl create namespace nodeport-sample
-
-# 현재 존재하는 네임스페이스 조회
+// 현재 존재하는 네임스페이스 조회
 kubectl get namespace
-
-# 만약 yml에 네임스페이스가 선언되어 있다면 -n을 스킵해도 됨.
+// 만약 yml에 네임스페이스가 선언되어 있다면 -n을 스킵해도 됨.
 kubectl -n nodeport-sample apply -f ./deployment/hello-flask.yml
 kubectl apply -f ./deployment/hello-flask.yml
-
-# 배포된 pod 확인해보기
+// 배포된 pod 확인해보기
 kubectl -n nodeport-sample get pods -o wide
-
-# 배포된 디플로이먼트(nodeport-sample) 확인해보기
+// 배포된 디플로이먼트(nodeport-sample) 확인해보기
 kubectl get deployment hello-flask-deployment -n nodeport-sample
 ```
 노드포트 서비스를 배포해보자.
