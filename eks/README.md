@@ -288,19 +288,6 @@ kubectl get hpa -n nodeport-sample
 - https://awskocaptain.gitbook.io/aws-builders-eks/6.-eks-ingress#ingress
 - https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.4/deploy/installation/
 
-먼저 서비스에 연결한 파드들 띄워서 준비한다.
-
-```
-kubectl create namespace ingress-sample
-
-# public subnet 노드 그룹에 배포 및 서비스 연결
-kubectl apply -f ./deployment/hello-flask.yml
-k apply -f ./service/hello-flask-nodeport.yml # 이쪽은 노드포트
-
-# private subnet 노드 그룹에도 배포
-kubectl apply -f ./deployment/hello-flask-backnode.ym
-```
-
 ### AWS LB IAM Policy 생성
 
 ALB Controller IAM 역할을 생성하기 위한 정책.json 파일 다운로드 및 정책 생성.
@@ -316,9 +303,7 @@ aws iam create-policy \
 
 ### IAM OIDC Provider 및 정책을 연동한 Service Account 생성
 
-이 자격 증명을 사용하여 AWS 서비스 자원들을 Kubernetes 자원들이 사용할 수 있다고 함.
-
-[withOIDC](https://eksctl.io/usage/schema/#iam-withOIDC)라는 옵션이 eksctl에 있던데 나중에 이걸로 한번에 되는지 확인 필요.
+이 자격 증명을 사용하여 AWS 서비스 자원들을 Kubernetes 자원들이 사용할 수 있다고 함. [withOIDC](https://eksctl.io/usage/schema/#iam-withOIDC)라는 옵션이 eksctl에 있던데 나중에 이걸로 한번에 되는지 확인 필요.
 
 ```
 eksctl utils associate-iam-oidc-provider \
@@ -333,9 +318,7 @@ aws iam list-open-id-connect-providers
 
 - [eksctl serviceaccount config 예시](https://github.com/weaveworks/eksctl/blob/main/examples/13-iamserviceaccounts.yaml)
 
-위에서 생성한 정책을 연동시킨 Service Account 생성하기.
-
- 단, 이것도 eksctl config에 예제가 존재하는 듯 하나 추후에 예제를 직접 생성해서 확인 필요.
+위에서 생성한 정책을 연동시킨 Service Account 생성하기. 단, 이것도 eksctl config에 예제가 존재하는 듯 하나 추후에 예제를 직접 생성해서 확인 필요.
 
 ```
 eksctl create iamserviceaccount \
@@ -356,11 +339,52 @@ eksctl create iamserviceaccount \
 --cluster=<cluster-name>
 ```
 
+**`with-alb-controller.yml` 파일로 위의 과정을 스킵하고 한번에 만들 수 있는듯 함. 참고해보자.**
+
+그다음은 인증서 관리자를 설치해준다.
+
+```
+kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
+```
+
+### AWS Loadbalancer Controller Pod 설치
+
+load balancer controller pod 설치를 위한 yaml를 설치한다. 
+
+```
+wget https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.3/v2_4_3_full.yaml
+```
+
+- `cluster_name`을 자신의 클러스터명으로 변경한다. 
+- 아까 이미 생성했으므로, `kind: ServiceAccount` 부분 전체를 주석친다.
+
+```
+kubectl apply -f v2_4_3_full.yaml
+```
+
+### Ingress로 ALB 시험해보기
+
+이제 인그레스(=ALB)를 yml로 쉽게 만들어낼 수 있다. 바로 실험해보자.
+
+```
+kubectl create namespace ingress-sample
+
+# public subnet 노드 그룹에 배포 및 서비스 연결
+k apply -f ./deployment/hello-flask.yml
+k apply -f ./service/hello-flask-nodeport.yml
+k apply -f ingress/hello-flask.yml
+
+# private subnet 노드 그룹에도 배포
+k apply -f ./deployment/hello-flask-backnode.yml
+k apply -f service/hello-flask-backnode-nodeport.yml
+k apply -f ingress/hello-flask-backnode.yml
+```
+
+TODO: 잉그레스 스펙 문서화 정리하기
 
 
 
 
-배포 완료한 뒤에, 다른 문서도 한번씩 훑어보기.
 
 ### private subnet에 배포된 pod에도 로드 밸런싱이 될까?
 

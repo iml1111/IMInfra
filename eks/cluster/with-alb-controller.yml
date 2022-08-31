@@ -5,6 +5,21 @@ metadata:
   name: Tony-Test
   region: ap-northeast-2
   version: "1.22"  
+
+iam:
+  withOIDC: true
+  serviceAccounts:
+  - metadata:
+      name: aws-load-balancer-controller
+      namespace: kube-system
+    wellKnownPolicies:
+      awsLoadBalancerController: true
+  - metadata:
+      name: cert-manager
+      namespace: cert-manager
+    wellKnownPolicies:
+      certManager: true
+
 vpc: 
   id: vpc-0171b3b786cb62751
   subnets:
@@ -31,6 +46,29 @@ vpc:
 
 managedNodeGroups:
   - name: managed-ng-public-01
+    instanceType: t2.medium
+    subnets:
+      - subnet-0cbee1ec3bc8cbb94
+      - subnet-0f1bafd17deee1af9
+      - subnet-0c5d2d52c2e1d027d
+    desiredCapacity: 3
+    minSize: 3
+    maxSize: 4
+    volumeSize: 20
+    volumeType: gp3 
+    amiFamily: AmazonLinux2
+    labels:
+      nodegroup-type: "managed-frontend-workloads"
+    iam:
+      attachPolicyARNs:
+      withAddonPolicies:
+        autoScaler: true
+        cloudWatch: true
+        ebs: true
+        fsx: true
+        efs: true
+  
+  - name: managed-ng-public-02 # test
     instanceType: t2.medium
     subnets:
       - subnet-0cbee1ec3bc8cbb94
