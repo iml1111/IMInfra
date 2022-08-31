@@ -65,7 +65,7 @@ eksctl delete cluster --name <CLUSTER_NAME>
 위 예제 `CLUSTER3AZ.yml`로 실행시킨 경우,
 퍼블릭/프라이빗 노드 그룹(총 2개의 그룹)이 3개의 AZ에 포진된 형태로 형성됨.
 노드 그룹의 각 캐퍼시티는 현재는 2 ~ 4개 사이이며, t2.medium 인스턴스를 사용
-
+```
 ### 클러스터 설정 갱신하기
 
 - [eksctl upgrade](https://eksctl.io/usage/cluster-upgrade/)
@@ -91,10 +91,9 @@ eksctl create nodegroup --config-file <CLUSTER.YML>
 멱등성을 포기하고 `scale` 커맨드로 노드 그룹의 오토스케일링 사양을 변경하는 방법은 아래와 같음.
 
 ```
-# Tony-Test 클러스터의 managed-ng-public-01 노드그룹에 2,2,4 오토스케일링 세팅.
+// Tony-Test 클러스터의 managed-ng-public-01 노드그룹에 2,2,4 오토스케일링 세팅.
 eksctl scale nodegroup --name=managed-ng-public-01 --cluster=Tony-Test --nodes=2 --nodes-min=2 --nodes-max=4
 ```
-
 
 
 
@@ -213,16 +212,16 @@ EC2 대시보드 접근 해야 함.
 어플리케이션의 업데이트란, 해당 이미지의 변경을 의미함.
 - **이미지의 이름이나 태그가 바뀌지 않았는데 새로 pull받아서 리로드하는 방법이 있는지 아직 모르겠음**
 ```
-# apply로 업데이트하기 (그냥 yml 파일 수정해서 apply 하면 됨, 가급적이면 이게 이상적일듯)
+// apply로 업데이트하기 (그냥 yml 파일 수정해서 apply 하면 됨, 가급적이면 이게 이상적일듯)
 kubectl apply -f ./deployment/hello-flask.yml
 
-# hello-flask-deployment 디플로이먼트의 <컨테이너>=<새로운_이미지>로 롤링 업데이트하기
+// hello-flask-deployment 디플로이먼트의 <컨테이너>=<새로운_이미지>로 롤링 업데이트하기
 kubectl set image deployment hello-flask-deployment hello-flask=iml1111/hello_flask -n nodeport-sample
 
-# 해당 디플로이먼트의 업데이트 히스토리 조회
+// 해당 디플로이먼트의 업데이트 히스토리 조회
 kubectl rollout history deployment hello-flask-deployment -n nodeport-sample
 
-# 해당 디플로이먼트의 롤링 업데이트 상황 확인
+// 해당 디플로이먼트의 롤링 업데이트 상황 확인
 kubectl rollout status deployment hello-flask-deployment -n nodeport-sample
 ```
 모든 업데이트의 자동 정책은 롤링 업데이트됨.
@@ -266,7 +265,7 @@ kubectl apply -f ./deployment/some-private.yml
 ```
 kubectl apply -f ./podscaler/hello-flask.yml
 
-# "hpa" 또는 "horizontalpodautoscaler" 둘 다 사용 가능
+// "hpa" 또는 "horizontalpodautoscaler" 둘 다 사용 가능
 kubectl get hpa -n nodeport-sample
 ```
 
