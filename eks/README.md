@@ -37,12 +37,15 @@ eks워크샵에 다루는 샘플 템플릿임. **개인적으로 이쪽이 좀 �
 aws cloudformation deploy \
   --stack-name "my-eks-vpc-stack" \
   --template-file ./vpc/VPC3AZ.yml \
-  --capabilities CAPABILITY_NAMED_IAM 
+  --capabilities CAPABILITY_NAMED_IAM
+// 삭제하려면,
+aws cloudformation delete-stack --stack-name <STACK-NAME>
 ```
 위 `VPC3AZ.yml`로 생성한 경우,
 3개의 AZ에 각각 퍼블릭/프라이빗 서브넷이 1개씩 배치된 총 6개의 서브넷과 
 미래에 TGW(trasit gateway)를 위한 서브넷 총 3개가 생겨나게 됨.
 그외에 클러스터를 위한 보안그룹이 추가로 1개 더 생겨남.
+
 
 
 ## EKS Cluster & 노드그룹 생성하기
@@ -282,6 +285,8 @@ kubectl get hpa -n nodeport-sample
 ### AWS LB IAM Policy 생성
 
 ALB Controller IAM 역할을 생성하기 위한 정책.json 파일 다운로드 및 정책 생성.
+
+- **이 과정은 계정당 한번은 꼭 해야 하는 듯 함 주의!**
 
 ```
 curl -o iam-policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.3/docs/install/iam_policy.json
