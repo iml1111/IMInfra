@@ -19,6 +19,12 @@ iam:
       namespace: cert-manager
     wellKnownPolicies:
       certManager: true
+  - metadata:
+      name: cluster-autoscaler
+      namespace: kube-system
+      labels: {aws-usage: "cluster-ops"}
+    wellKnownPolicies:
+      autoScaler: true
 
 vpc: 
   id: vpc-0171b3b786cb62751
