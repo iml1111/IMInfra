@@ -147,21 +147,61 @@ kubectl -n kube-system logs -f deployment.apps/cluster-autoscaler
 
 
 
-## 대시보드
+## k8s 대시보드
 
+- https://whchoi98.gitbook.io/k8s/observability/k8s-dashboard
+- [k8s Dashboard git](https://github.com/kubernetes/dashboard)
 
+k8s 대시보드는  웹 기반 쿠버네티스 유저 인터페이스임. 클러스터 파드 배포, 에러 트러블슈팅, 롤링 업데이트 등 거의 모든 액션을 웹에서 수행할 수 있도록 도와줌.
+
+- 대시보드를 위해서는 먼저 **metric-server**가 설치되어야 함. `README.md` 참고.
+
+```
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.6.1/aio/deploy/recommended.yaml
+// 확인 방법
+kubectl -n kubernetes-dashboard get svc -o wide
+```
+
+기본적으로는 설치해도 대시보드 사용자의 권한이 제한되어 있기에 이를 관리자 권한 수준으로 만들 필요가 있음.
+
+자세한 역할 바인딩 정보는 `eks-admin-service-account.yaml` 참고.
+
+```
+kubectl apply -f sa/eks-admin-service-account.yaml
+```
+
+### 대시보드 접속하기
+
+kubernetes dashboard는 ClusterIP 타입으로 서비스 배포되기 때문에 외부에서 접근 불가능함. 때문에 무조건 `kubectl proxy` 명령어를 통해서만 접속이 가능함.
+
+```
+// 토큰 조회하기
+kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep eks-admin | awk '{print $1}')
+// 대쉬보드 접속을 위한 프록시 실행하기
+kubectl proxy --port=8080 --address=0.0.0.0 --disable-filter=true &
+```
+
+### **Prometheus-Grafana**
+
+- [k8s workshop](https://whchoi98.gitbook.io/k8s/observability/prometheus-grafana)
+- [Promtheus Getting started on Docker](https://wjdqudgnsdlqslek.tistory.com/44)
+- [Prometheus & Grafana 간단 연동하기](https://benlee73.tistory.com/60)
 
 
 
 ## 로그 통합 관리
 
-k9s에서 각 파드별로는 되는 것 같은데, 통합은 어떻게 해야 하는가?
+- https://whchoi98.gitbook.io/k8s/observability/efk-logging
+- https://whchoi98.gitbook.io/k8s/observability/container-insights
 
-## 
+k9s에서 각 파드별로는 되는 것 같은데, 통합은 어떻게 해야 하는가?
 
 
 
 # References
+
+- [Promtheus Getting started on Docker](https://wjdqudgnsdlqslek.tistory.com/44)
+- [Prometheus & Grafana 간단 연동하기](https://benlee73.tistory.com/60)
 
 - https://eksctl.io/introduction/
 - https://catalog.us-east-1.prod.workshops.aws/workshops/9c0aa9ab-90a9-44a6-abe1-8dff360ae428/ko-KR/10-intro
