@@ -193,7 +193,39 @@ kubectl proxy --port=8080 --address=0.0.0.0 --disable-filter=true &
 
 - https://whchoi98.gitbook.io/k8s/observability/efk-logging
 
-EFK란 Elasticsearch + Fluentd + Kibana의 조합을 일컫는다.
+EFK란 Elasticsearch + Fluentd + Kibana의 조합을 일컫는다. 모든 파드에서 발생하는 로그를 통합하여 관리할 수 있다.
+
+- OIDC Provider 설정하기 `README.md` 참고.
+
+플런트 비트를 사용하기 위한 정책 생성하기. `fluent-bit-policy.json` 참고 
+
+(리전, 아이디, ES 도메인 작성 필요)
+
+```
+aws iam create-policy   \
+  --policy-name fluent-bit-policy \
+  --policy-document file://~/environment/logging/fluent-bit-policy.json
+```
+
+마찬가지로 해당 정책을 바탕으로 서비스 어카운트도 생성해주기.
+
+```
+eksctl create iamserviceaccount \
+    --name fluent-bit \
+    --namespace <NAMESPACE> \
+    --cluster <CLUSTER_NAME> \
+    --attach-policy-arn "arn:aws:iam::${ACCOUNT_ID}:policy/fluent-bit-policy" \
+    --approve \
+    --override-existing-serviceaccounts
+// 확인
+kubectl -n <NAMESPACE> describe serviceaccounts fluent-bit
+```
+
+### ES(ElasitcSearch) 설치하기
+
+
+
+
 
 
 
