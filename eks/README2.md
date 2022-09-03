@@ -189,12 +189,17 @@ kubectl proxy --port=8080 --address=0.0.0.0 --disable-filter=true &
 
 
 
-## 로그 통합 관리
+## 로그 통합 관리 (EFK)
 
 - https://whchoi98.gitbook.io/k8s/observability/efk-logging
-- https://whchoi98.gitbook.io/k8s/observability/container-insights
 
-k9s에서 각 파드별로는 되는 것 같은데, 통합은 어떻게 해야 하는가?
+EFK란 Elasticsearch + Fluentd + Kibana의 조합을 일컫는다.
+
+
+
+## Container Insights (CW)
+
+- https://whchoi98.gitbook.io/k8s/observability/container-insights
 
 
 
