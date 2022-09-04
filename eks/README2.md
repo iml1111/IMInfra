@@ -187,7 +187,7 @@ kubectl proxy --port=8080 --address=0.0.0.0 --disable-filter=true &
 - [Promtheus Getting started on Docker](https://wjdqudgnsdlqslek.tistory.com/44)
 - [Prometheus & Grafana 간단 연동하기](https://benlee73.tistory.com/60)
 
-
+**[TODO] 노드 그룹이 추가되어도 모니터링이 될까?**
 
 ## 로그 통합 관리 (EFK)
 
@@ -225,7 +225,7 @@ kubectl -n <NAMESPACE> describe serviceaccounts fluent-bit
 
 
 
-
+**[TODO] 노드 그룹이 추가되어도 모니터링이 될까?**
 
 
 
@@ -233,7 +233,7 @@ kubectl -n <NAMESPACE> describe serviceaccounts fluent-bit
 
 - https://whchoi98.gitbook.io/k8s/observability/container-insights
 
-
+**[TODO] 노드 그룹이 추가되어도 모니터링이 될까?**
 
 # References
 
