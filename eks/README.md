@@ -312,7 +312,7 @@ aws iam create-policy \
 
 ```
 eksctl utils associate-iam-oidc-provider \
-    --region ${AWS_REGION} \
+    --region ap-northeast-2 \
     --cluster ${ekscluster_name} \
     --approve
 아래의 명령어로 확인 가능.
@@ -380,8 +380,6 @@ k apply -f service/hello-flask-backnode-nodeport.yml
 k apply -f ingress/hello-flask-backnode.yml
 ```
 프라이빗 서브넷의 노드에도 이렇게 하면 충분히 접근이 가능하기 때문에 가급적이면 이쪽이 추천된다고 함. 물론 퍼블릭도 포트를 아예 막아버리면 접근을 못하긴 하는데 솔직히 이부분의 명확한 차이는 모르겠음.
-
-TODO: 잉그레스 스펙 문서화 정리하기
 
 
 # References
