@@ -156,7 +156,7 @@ Resources:
       GatewayId: !Ref InternetGateway
 
 ################################################################################################
-# Create-NATGateway: NATGATEWAY01,02,03,04
+# Create-NATGateway: NATGATEWAY01
 ################################################################################################
   NatGateway01:
     DependsOn:
@@ -209,7 +209,7 @@ Resources:
         - Key: Name
           Value: !Sub '${AWS::StackName}-SSMSG'
 ########################################################
-# Create-Private-Subnet: PrivateSubnet01,02,03,04
+# Create-Private-Subnet: PrivateSubnet01,02
 ########################################################
 
   PrivateSubnet01:

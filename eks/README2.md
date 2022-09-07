@@ -98,7 +98,7 @@ aws autoscaling \
 ```
 aws iam create-policy \
     --policy-name AmazonEKSClusterAutoscalerPolicy \
-    --policy-document ./policy/cluster-autoscaler-policy.json
+    --policy-document file://./policy/cluster-autoscaler-policy.json
 ```
 
 마지막으로 해당 정책을 attach시켜 service account를 만들어 줌.
@@ -234,6 +234,12 @@ kubectl -n <NAMESPACE> describe serviceaccounts fluent-bit
 - https://whchoi98.gitbook.io/k8s/observability/container-insights
 
 **[TODO] 노드 그룹이 추가되어도 모니터링이 될까?**
+
+
+
+## 쿠버네티스 크론잡
+
+
 
 # References
 
