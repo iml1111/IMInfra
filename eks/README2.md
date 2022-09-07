@@ -265,6 +265,8 @@ AWS OpenSearch에 직접 들어가서 할 수도 있겠지만 일단 여기서�
 ```
 aws es create-elasticsearch-domain \
   --cli-input-json  file://./es_light.json
+// 지우려면
+aws es delete-elasticsearch-domain --domain-name <DOMAIN_NAME>
 ```
 
 클러스터의 fluent ARN 서비스 어카운트가 ES API를 통해 Backend 권한을 받아 접근할 수 있도록 설정 해주어야 함.
