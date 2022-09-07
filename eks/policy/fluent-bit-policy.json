@@ -6,7 +6,7 @@
             "Action": [
                 "es:ESHttp*"
             ],
-            "Resource": "arn:aws:es:${AWS_REGION}:${ACCOUNT_ID}:domain/${ES_DOMAIN_NAME}"
+            "Resource": "arn:aws:es:ap-northeast-2:044403692004:domain/tony-test-es-domain"
         }
     ]
 }

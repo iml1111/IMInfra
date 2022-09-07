@@ -175,10 +175,12 @@ kubectl apply -f sa/eks-admin-service-account.yaml
 kubernetes dashboard는 ClusterIP 타입으로 서비스 배포되기 때문에 외부에서 접근 불가능함. 때문에 무조건 `kubectl proxy` 명령어를 통해서만 접속이 가능함.
 
 ```
-// 토큰 조회하기
+// 토큰 조회하기, 여기서 뜨는 토큰 복사해두기
 kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep eks-admin | awk '{print $1}')
 // 대쉬보드 접속을 위한 프록시 실행하기
-kubectl proxy --port=8080 --address=0.0.0.0 --disable-filter=true &
+kubectl proxy --port=8080 --address=0.0.0.0 --disable-filter=true
+// 프록시로 클러스터 대시보드에 접속하기
+http://localhost:8080/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
 ```
 
 ### **Prometheus-Grafana**
@@ -187,7 +189,42 @@ kubectl proxy --port=8080 --address=0.0.0.0 --disable-filter=true &
 - [Promtheus Getting started on Docker](https://wjdqudgnsdlqslek.tistory.com/44)
 - [Prometheus & Grafana 간단 연동하기](https://benlee73.tistory.com/60)
 
-**[TODO] 노드 그룹이 추가되어도 모니터링이 될까?**
+### 프로메테우스 세팅하기
+
+```
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+kubectl create namespace prometheus
+helm upgrade -i prometheus prometheus-community/prometheus \
+    --namespace prometheus \
+    --set alertmanager.persistentVolume.storageClass="gp2",server.persistentVolume.storageClass="gp2"
+// 배포 확인하기
+kubectl -n prometheus get all
+// 프록시로 접근하기
+kubectl port-forward -n prometheus deploy/prometheus-server 8081:9090
+http://localhost:8081/targets
+```
+
+프로메테우스의 데이터 저장주기는 기본 저장주기는 [15일](https://prometheus.io/docs/prometheus/latest/storage/#operational-aspects)이라고 함. 필요하다면 옵션을 통해 조절할 수 있을 듯.
+
+### 그라파나 구성하기
+
+```
+kubectl create namespace grafana
+helm repo add grafana https://grafana.github.io/helm-charts
+helm install grafana grafana/grafana \
+    --namespace grafana \
+    --set persistence.storageClassName="gp2" \
+    --set persistence.enabled=true \
+    --set adminPassword='password' \
+    --values ./grafana.yml \
+    --set service.type=LoadBalancer
+// 배포 확인하기ㅡ 여기서 도메인 복사해서 접근하기
+kubectl -n grafana get all
+```
+
+그 후, [이 링크](https://whchoi98.gitbook.io/k8s/observability/prometheus-grafana#7.cluster-monitoring)를 따라서 import 설정 수행하기.
+
+
 
 ## 로그 통합 관리 (EFK)
 
@@ -204,7 +241,7 @@ EFK란 Elasticsearch + Fluentd + Kibana의 조합을 일컫는다. 모든 파드
 ```
 aws iam create-policy   \
   --policy-name fluent-bit-policy \
-  --policy-document file://~/environment/logging/fluent-bit-policy.json
+  --policy-document file://./policy/fluent-bit-policy.json
 ```
 
 마찬가지로 해당 정책을 바탕으로 서비스 어카운트도 생성해주기.
@@ -212,26 +249,68 @@ aws iam create-policy   \
 ```
 eksctl create iamserviceaccount \
     --name fluent-bit \
-    --namespace <NAMESPACE> \
+    --namespace fluent-bit \
     --cluster <CLUSTER_NAME> \
     --attach-policy-arn "arn:aws:iam::${ACCOUNT_ID}:policy/fluent-bit-policy" \
     --approve \
     --override-existing-serviceaccounts
 // 확인
-kubectl -n <NAMESPACE> describe serviceaccounts fluent-bit
+kubectl -n fluent-bit describe serviceaccounts fluent-bit
 ```
 
-### ES(ElasitcSearch) 설치하기
+### ES(ElasitcSearch) 설치 및 세팅하기
 
+AWS OpenSearch에 직접 들어가서 할 수도 있겠지만 일단 여기서는 CLI에서 해보도록 하겠음. 최대한 라이트한 옵션에서 실행시켜 보도록 함. 모든 옵션은 라이브에서 약간의 다운타임 혹은 무중단으로 업데이트가 가능한 것 같음!
 
+```
+aws es create-elasticsearch-domain \
+  --cli-input-json  file://./es_light.json
+```
 
-**[TODO] 노드 그룹이 추가되어도 모니터링이 될까?**
+클러스터의 fluent ARN 서비스 어카운트가 ES API를 통해 Backend 권한을 받아 접근할 수 있도록 설정 해주어야 함.
+
+```
+export FLUENTBIT_ROLE=$(eksctl get iamserviceaccount --cluster <CLUSTER_NAME> --namespace fluent-bit -o json | jq '.[].status.roleARN' -r)
+export ES_ENDPOINT=$(aws es describe-elasticsearch-domain --domain-name ${ES_DOMAIN_NAME} --output text --query "DomainStatus.Endpoint")
+// 권한 부여
+curl -sS -u 'imiml:!Pasword123' \
+    -X PATCH \
+    https://${ES_ENDPOINT}/_opendistro/_security/api/rolesmapping/all_access\?pretty \
+    -H 'Content-Type: application/json' \
+    -d'
+[
+  {
+    "op": "add", "path": "/backend_roles", "value": ["'${FLUENTBIT_ROLE}'"]
+  }
+]
+'
+```
+
+그 후, `fluentbit.yml`을 실행시켜서 Daemonset를 세팅해준다. 데몬셋이기 때문에 추후에 노드가 늘어나도 자동으로 생겨나며 관리됨.
+
+```
+kubectl apply -f ./fluentbit.yml
+// 배포 확인하기
+kubectl -n fluent-bit get all
+```
+
+그 후, [키바나](https://whchoi98.gitbook.io/k8s/observability/efk-logging#kibana-.)에 들어가서 대시보드 세팅후 탐색하기.
 
 
 
 ## Container Insights (CW)
 
 - https://whchoi98.gitbook.io/k8s/observability/container-insights
+- https://docs.aws.amazon.com/ko_kr/AmazonCloudWatch/latest/monitoring/Container-Insights-setup-logs-FluentBit.html
+
+AWS의 CW에서 지원하는 자체 메트릭 수집 및 로깅 서비스임. 좀더 AWS에 의존하게 되겠지만 매니지드 서비스이기에 안정성이 확보된다고 보면 됨.
+
+```
+STACK_NAME=$(eksctl get nodegroup --cluster <CLUSTER_NAME> -o json | jq -r '.[].StackName')
+echo $STACK_NAME
+```
+
+
 
 **[TODO] 노드 그룹이 추가되어도 모니터링이 될까?**
 
