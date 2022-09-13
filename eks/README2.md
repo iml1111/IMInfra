@@ -288,7 +288,7 @@ curl -sS -u 'imiml:!Pasword123' \
 '
 ```
 
-그 후, `fluentbit.yml`을 실행시켜서 Daemonset를 세팅해준다. 데몬셋이기 때문에 추후에 노드가 늘어나도 자동으로 생겨나며 관리됨.
+그 후, `fluentbit.yml`을 실행시켜서 Daemonset를 세팅해준다. **데몬셋이기 때문에 추후에 노드가 늘어나도 자동으로 생겨나며 관리됨.**
 
 ```
 kubectl apply -f ./fluentbit.yml
@@ -305,20 +305,64 @@ kubectl -n fluent-bit get all
 - https://whchoi98.gitbook.io/k8s/observability/container-insights
 - https://docs.aws.amazon.com/ko_kr/AmazonCloudWatch/latest/monitoring/Container-Insights-setup-logs-FluentBit.html
 
-AWS의 CW에서 지원하는 자체 메트릭 수집 및 로깅 서비스임. 좀더 AWS에 의존하게 되겠지만 매니지드 서비스이기에 안정성이 확보된다고 보면 됨.
+AWS의 CW에서 지원하는 자체 메트릭 수집 및 로깅 서비스임. **좀더 AWS에 의존하게 되겠지만 매니지드 서비스이기에 안정성이 확보**된다고 보면 됨.
+
+### 각 노드 그룹 IAM 역할에 정책 추가하기
+
+아래 명령어를 실행하면 현재 클러스터에 등록된 **노드 그룹 스택들(Cloudformation)의 이름**을 알 수 있음. (물론 콘솔이든 뭐든 다른 곳에서 확인 가능함.)
 
 ```
-STACK_NAME=$(eksctl get nodegroup --cluster <CLUSTER_NAME> -o json | jq -r '.[].StackName')
-echo $STACK_NAME
+eksctl get nodegroup --cluster <CLUSTER_NAME> -o json | jq -r '.[].StackName'
+// 노드 그룹이 여러개라면 여러개가 출력될 것임
 ```
 
+그 후, 존재하는 노드 그룹들에 한하여 아래의 명령어를 통해 각각의 IAM ROLE 이름을 확인할 수 있음. 각각의 노드그룹 스택들에 대하여 모두 조회해주자.
 
+```
+aws cloudformation describe-stack-resources --stack-name <NODEGROUP_STACK_NAME> | jq -r '.StackResources[] | select(.ResourceType=="AWS::IAM::Role") | .PhysicalResourceId'
+```
 
-**[TODO] 노드 그룹이 추가되어도 모니터링이 될까?**
+그 후, IAM ROLE이 조회된 노드 그룹(즉, 존재하는 노드 그룹)들에 대하여 각각 아래의 명령을 실행시켜, CloudWatchAgent 정책을 추가하여 권한 부여하기
+
+```
+aws iam attach-role-policy \
+  --role-name <ROLE_NAME> \
+  --policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+// 정책 연결 확인하기
+aws iam list-attached-role-policies --role-name <ROLE_NAME> | grep CloudWatchAgentServerPolicy || echo 'Policy not found'
+```
+
+### Container Insights 설치하기 (AWS quickstart)
+
+[여기](https://whchoi98.gitbook.io/k8s/observability/container-insights#2.-container-insight)에서 다운받은 yml 파일로 바로 컨테이너 인사이트 관련 리소스를 세팅할 수 있음. 해당 파일을 실행하면 다음과 같은 세팅이 실행되는 듯 함.
+
+- "amazon-cloudwatch" namespace를 만듬.
+
+- 2개의 DaemonSet을 만듭니다. (Cloudwatch-agent, fluentd)
+
+  - Cloudwatch-agent : Metric을 Cloudwatch로 전송
+
+  - fluentd : log를 Cloudwatch에 전송.
+
+- 2개 DaemonSet을 위한 보안 정책적용. (SecurityAccount, ClusterRole, ClusterRoleBinding)
+- 2개 DaemonSet을 위한 ConfigMap
+
+```
+kubectl apply -f ci/cwagent-fluentd-quickstart.yaml
+```
+
+단, 해당 방식은 fluentd인데 **[AWS 공식 도큐먼트](https://docs.aws.amazon.com/ko_kr/AmazonCloudWatch/latest/monitoring/Container-Insights-setup-EKS-quickstart.html)에서는 Fluent Bit를 추천**한다고 함. 자세하게 하나하나 따라가려면 공식 문서 참조.
+
+```
+kubectl apply -f ci/cwagent-fluent-bit-quickstart.yaml
+```
 
 
 
 ## 쿠버네티스 크론잡
+
+- https://kubernetes.io/ko/docs/tasks/job/automated-tasks-with-cron-jobs/
+- https://kubernetes.io/ko/docs/concepts/workloads/controllers/cron-jobs/
 
 
 
