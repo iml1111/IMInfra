@@ -11,6 +11,9 @@
 ## VPC 생성하기
 
 먼저 cloud formation으로 적절한 VPC 세팅을 구축합니다.
+
+클러스터를 생성하는 경우 서로 다른 가용 영역에 있는 [VPC](https://docs.aws.amazon.com/vpc/latest/userguide/configure-your-vpc.html) 및 두 개 이상의 서브넷을 지정해야 함.
+
 이미 만들어진 다양한 VPC 템플릿이 있는데 이 중에서 적절한 걸 골라서 해봅시다.
 
 ### EKS_DOC_SAMPLE_VPC.yml

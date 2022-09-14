@@ -28,29 +28,22 @@ iam:
       autoScaler: true
 
 vpc: 
-  id: vpc-0cd60f6924292641c
+  id: vpc-091777e1c41ca9466
   subnets:
     public:
       PublicSubnet01:
         az: ap-northeast-2a
-        id: subnet-03072db617a595faa
+        id: subnet-0889deca3ae2e2855
       PublicSubnet02:
         az: ap-northeast-2b
-        id: subnet-0f13e003ddc1db139
-    private:
-      PrivateSubnet01:
-        az: ap-northeast-2a
-        id: subnet-021655c876ad29f40
-      PrivateSubnet02:
-        az: ap-northeast-2b
-        id: subnet-0909f95087ea18cf8
+        id: subnet-0c9054a3c1c80f19a
 
 managedNodeGroups:
   - name: managed-ng-public-01
     instanceType: t2.medium
     subnets:
-      - subnet-03072db617a595faa
-      - subnet-0f13e003ddc1db139
+      - subnet-0889deca3ae2e2855
+      - subnet-0c9054a3c1c80f19a
     desiredCapacity: 2
     minSize: 2
     maxSize: 4
@@ -67,7 +60,3 @@ managedNodeGroups:
         ebs: true
         fsx: true
         efs: true
-        
-cloudWatch:
-    clusterLogging:
-        enableTypes: ["api", "audit", "authenticator", "controllerManager", "scheduler"]
