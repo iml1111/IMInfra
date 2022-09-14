@@ -363,8 +363,6 @@ kubectl apply -f ci/cwagent-fluent-bit-quickstart.yaml
 
 
 
-
-
 ## 쿠버네티스 크론잡
 
 - https://kubernetes.io/ko/docs/tasks/job/automated-tasks-with-cron-jobs/
