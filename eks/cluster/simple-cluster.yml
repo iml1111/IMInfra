@@ -1,0 +1,73 @@
+# EKS 구축을 위한 비용 최소 조건 세팅 (2AZ, 미디움 ec2 2개 퍼블릭)
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: Tony-Test-Light
+  region: ap-northeast-2
+  version: "1.22"  
+
+iam:
+  withOIDC: true
+  serviceAccounts:
+  - metadata:
+      name: aws-load-balancer-controller
+      namespace: kube-system
+    wellKnownPolicies:
+      awsLoadBalancerController: true
+  - metadata:
+      name: cert-manager
+      namespace: cert-manager
+    wellKnownPolicies:
+      certManager: true
+  - metadata:
+      name: cluster-autoscaler
+      namespace: kube-system
+      labels: {aws-usage: "cluster-ops"}
+    wellKnownPolicies:
+      autoScaler: true
+
+vpc: 
+  id: vpc-0cd60f6924292641c
+  subnets:
+    public:
+      PublicSubnet01:
+        az: ap-northeast-2a
+        id: subnet-03072db617a595faa
+      PublicSubnet02:
+        az: ap-northeast-2b
+        id: subnet-0f13e003ddc1db139
+    private:
+      PrivateSubnet01:
+        az: ap-northeast-2a
+        id: subnet-021655c876ad29f40
+      PrivateSubnet02:
+        az: ap-northeast-2b
+        id: subnet-0909f95087ea18cf8
+
+managedNodeGroups:
+  - name: managed-ng-public-01
+    instanceType: t2.medium
+    subnets:
+      - subnet-03072db617a595faa
+      - subnet-0f13e003ddc1db139
+    desiredCapacity: 2
+    minSize: 2
+    maxSize: 4
+    volumeSize: 20
+    volumeType: gp3 
+    amiFamily: AmazonLinux2
+    labels:
+      nodegroup-type: "managed-frontend-workloads"
+    iam:
+      attachPolicyARNs:
+      withAddonPolicies:
+        autoScaler: true
+        cloudWatch: true
+        ebs: true
+        fsx: true
+        efs: true
+        
+cloudWatch:
+    clusterLogging:
+        enableTypes: ["api", "audit", "authenticator", "controllerManager", "scheduler"]
