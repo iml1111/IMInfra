@@ -298,12 +298,16 @@ kubectl -n fluent-bit get all
 
 그 후, [키바나](https://whchoi98.gitbook.io/k8s/observability/efk-logging#kibana-.)에 들어가서 대시보드 세팅후 탐색하기.
 
+에러 로그가 여러 줄에 잘려서 출력되는 경우, 필터링을 통해 로그만 보게 해서 읽어볼 수는 있음. **근데 순서가 보장되지 않아서 이게 좀 짜증남.** 제일 좋은 방법은 로그를 한줄에 싹다 보내는 거 인듯.
+
+[KQL](https://blog.naver.com/PostView.nhn?blogId=occidere&logNo=222139661612&categoryNo=0&parentCategoryNo=0&viewDate=&currentPage=1&postListTopCurrentPage=1&from=postView)이라는 독자적인 쿼리 언어가 존재함. 이걸로 로그를 필터링하고 모니터링할 수 있음.
+
 
 
 ## Container Insights (CW)
 
-- https://whchoi98.gitbook.io/k8s/observability/container-insights
-- https://docs.aws.amazon.com/ko_kr/AmazonCloudWatch/latest/monitoring/Container-Insights-setup-logs-FluentBit.html
+- [워크샵 CI 튜토리얼 문서](https://whchoi98.gitbook.io/k8s/observability/container-insights)
+- [EKS CI 공식문서](https://docs.aws.amazon.com/ko_kr/AmazonCloudWatch/latest/monitoring/Container-Insights-setup-logs-FluentBit.html)
 
 AWS의 CW에서 지원하는 자체 메트릭 수집 및 로깅 서비스임. **좀더 AWS에 의존하게 되겠지만 매니지드 서비스이기에 안정성이 확보**된다고 보면 됨.
 
@@ -337,15 +341,15 @@ aws iam list-attached-role-policies --role-name <ROLE_NAME> | grep CloudWatchAge
 [여기](https://whchoi98.gitbook.io/k8s/observability/container-insights#2.-container-insight)에서 다운받은 yml 파일로 바로 컨테이너 인사이트 관련 리소스를 세팅할 수 있음. 해당 파일을 실행하면 다음과 같은 세팅이 실행되는 듯 함.
 
 - "amazon-cloudwatch" namespace를 만듬.
-
 - 2개의 DaemonSet을 만듭니다. (Cloudwatch-agent, fluentd)
 
   - Cloudwatch-agent : Metric을 Cloudwatch로 전송
 
   - fluentd : log를 Cloudwatch에 전송.
-
 - 2개 DaemonSet을 위한 보안 정책적용. (SecurityAccount, ClusterRole, ClusterRoleBinding)
 - 2개 DaemonSet을 위한 ConfigMap
+
+이미 다운받아서 다 세팅해둠. {{value}} 값을 자신의 상황에 맞게 수정해주고. yaml 파일을 적용해주면 됨.
 
 ```
 kubectl apply -f ci/cwagent-fluentd-quickstart.yaml
@@ -356,6 +360,8 @@ kubectl apply -f ci/cwagent-fluentd-quickstart.yaml
 ```
 kubectl apply -f ci/cwagent-fluent-bit-quickstart.yaml
 ```
+
+
 
 
 

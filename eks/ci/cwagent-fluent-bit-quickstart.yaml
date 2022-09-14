@@ -74,7 +74,7 @@ data:
       "logs": {
         "metrics_collected": {
           "kubernetes": {
-            "cluster_name": "{{cluster_name}}",
+            "cluster_name": "Tony-Test-Light",
             "metrics_collection_interval": 60
           }
         },
@@ -182,17 +182,17 @@ spec:
 ---
 
 # create configmap for cluster name and aws region for CloudWatch Logs
-# need to replace the placeholders {{cluster_name}} and {{region_name}}
-# and need to replace {{http_server_toggle}} and {{http_server_port}}
-# and need to replace {{read_from_head}} and {{read_from_tail}}
+# need to replace the placeholders Tony-Test-Light and ap-northeast-2
+# and need to replace "On" and "2020"
+# and need to replace "Off" and "On"
 apiVersion: v1
 data:
-  cluster.name: {{cluster_name}}
+  cluster.name: Tony-Test-Light
   logs.region: ap-northeast-2
-  http.server: On
-  http.port: 2020
-  read.head: Off
-  read.tail: On
+  http.server: "On"
+  http.port: "2020"
+  read.head: "Off"
+  read.tail: "On"
 kind: ConfigMap
 metadata:
   name: fluent-bit-cluster-info
