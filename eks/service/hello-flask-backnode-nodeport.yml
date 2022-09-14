@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-flask-backnode-nodeport-svc
+  namespace: ingress-sample
+spec:
+  selector:
+    app: hello-flask-backnode
+  type: NodePort
+  ports:
+   -  protocol: TCP
+      nodePort: 30081
+      port: 8081
+      targetPort: 5000

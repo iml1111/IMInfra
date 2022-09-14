@@ -1,0 +1,62 @@
+# EKS 구축을 위한 비용 최소 조건 세팅 (2AZ, 미디움 ec2 2개 퍼블릭)
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: Tony-Test-Light
+  region: ap-northeast-2
+  version: "1.22"  
+
+iam:
+  withOIDC: true
+  serviceAccounts:
+  - metadata:
+      name: aws-load-balancer-controller
+      namespace: kube-system
+    wellKnownPolicies:
+      awsLoadBalancerController: true
+  - metadata:
+      name: cert-manager
+      namespace: cert-manager
+    wellKnownPolicies:
+      certManager: true
+  - metadata:
+      name: cluster-autoscaler
+      namespace: kube-system
+      labels: {aws-usage: "cluster-ops"}
+    wellKnownPolicies:
+      autoScaler: true
+
+vpc: 
+  id: vpc-091777e1c41ca9466
+  subnets:
+    public:
+      PublicSubnet01:
+        az: ap-northeast-2a
+        id: subnet-0889deca3ae2e2855
+      PublicSubnet02:
+        az: ap-northeast-2b
+        id: subnet-0c9054a3c1c80f19a
+
+managedNodeGroups:
+  - name: managed-ng-public-01
+    instanceType: t2.medium
+    subnets:
+      - subnet-0889deca3ae2e2855
+      - subnet-0c9054a3c1c80f19a
+    desiredCapacity: 2
+    minSize: 2
+    maxSize: 4
+    volumeSize: 20
+    volumeType: gp3 
+    amiFamily: AmazonLinux2
+    labels:
+      nodegroup-type: "managed-frontend-workloads"
+    iam:
+      attachPolicyARNs:
+      withAddonPolicies:
+        autoScaler: true
+        cloudWatch: true
+        ebs: true
+        fsx: true
+        efs: true

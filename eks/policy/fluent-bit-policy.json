@@ -1,0 +1,12 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "es:ESHttp*"
+            ],
+            "Resource": "arn:aws:es:ap-northeast-2:044403692004:domain/tony-test-es-domain"
+        }
+    ]
+}

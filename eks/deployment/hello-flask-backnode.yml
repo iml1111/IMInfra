@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-flask-backnode-deployment
+  labels:
+    app: hello-flask-backnode
+  namespace: ingress-sample
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hello-flask-backnode
+  template:
+    metadata:
+      labels:
+        app: hello-flask-backnode
+    spec:
+      containers:
+      - image: iml1111/hello_flask:latest
+        imagePullPolicy: Always
+        name: hello-flask-backnode
+        resources:
+          requests:
+            cpu: "100m"
+        ports:
+        - containerPort: 5000
+          protocol: TCP
+        readinessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+      nodeSelector:
+        nodegroup-type: "managed-backend-workloads"
+

@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-flask-deployment
+  labels:
+    app: hello-flask
+  namespace: ingress-sample
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hello-flask
+  template:
+    metadata:
+      labels:
+        app: hello-flask
+    spec:
+      containers:
+      - image: iml1111/hello_flask:v2
+        imagePullPolicy: Always
+        name: hello-flask
+        resources:
+          requests:
+            cpu: "100m"
+        ports:
+        - containerPort: 5000
+          protocol: TCP
+        readinessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+      nodeSelector:
+        nodegroup-type: "managed-frontend-workloads"
+

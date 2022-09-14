@@ -1,0 +1,103 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: Tony-Test
+  region: ap-northeast-2
+  version: "1.22"  
+
+iam:
+  withOIDC: true
+  serviceAccounts:
+  - metadata:
+      name: aws-load-balancer-controller
+      namespace: kube-system
+    wellKnownPolicies:
+      awsLoadBalancerController: true
+  - metadata:
+      name: cert-manager
+      namespace: cert-manager
+    wellKnownPolicies:
+      certManager: true
+  - metadata:
+      name: cluster-autoscaler
+      namespace: kube-system
+      labels: {aws-usage: "cluster-ops"}
+    wellKnownPolicies:
+      autoScaler: true
+
+vpc: 
+  id: vpc-0171b3b786cb62751
+  subnets:
+    public:
+      PublicSubnet01:
+        az: ap-northeast-2a
+        id: subnet-0cbee1ec3bc8cbb94
+      PublicSubnet02:
+        az: ap-northeast-2b
+        id: subnet-0f1bafd17deee1af9
+      PublicSubnet03:
+        az: ap-northeast-2c
+        id: subnet-0c5d2d52c2e1d027d
+    private:
+      PrivateSubnet01:
+        az: ap-northeast-2a
+        id: subnet-061945c56a9703ca6
+      PrivateSubnet02:
+        az: ap-northeast-2b
+        id: subnet-03e8e7b917db46fa1
+      PrivateSubnet03:
+        az: ap-northeast-2c
+        id: subnet-05eb3eb431e8d6af5
+
+managedNodeGroups:
+  - name: managed-ng-public-01
+    instanceType: t2.medium
+    subnets:
+      - subnet-0cbee1ec3bc8cbb94
+      - subnet-0f1bafd17deee1af9
+      - subnet-0c5d2d52c2e1d027d
+    desiredCapacity: 3
+    minSize: 3
+    maxSize: 4
+    volumeSize: 20
+    volumeType: gp3 
+    amiFamily: AmazonLinux2
+    labels:
+      nodegroup-type: "managed-frontend-workloads"
+    iam:
+      attachPolicyARNs:
+      withAddonPolicies:
+        autoScaler: true
+        cloudWatch: true
+        ebs: true
+        fsx: true
+        efs: true
+        
+  - name: managed-ng-private-01
+    instanceType: t2.medium
+    subnets:
+      - subnet-061945c56a9703ca6
+      - subnet-03e8e7b917db46fa1
+      - subnet-05eb3eb431e8d6af5
+    desiredCapacity: 2
+    privateNetworking: true
+    minSize: 2
+    maxSize: 4
+    volumeSize: 20
+    volumeType: gp3 
+    amiFamily: AmazonLinux2
+    labels:
+      nodegroup-type: "managed-backend-workloads"
+    iam:
+      attachPolicyARNs:
+      withAddonPolicies:
+        autoScaler: true
+        cloudWatch: true
+        ebs: true
+        fsx: true
+        efs: true
+        
+cloudWatch:
+    clusterLogging:
+        enableTypes: ["api", "audit", "authenticator", "controllerManager", "scheduler"]

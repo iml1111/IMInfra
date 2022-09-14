@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: some-private-deployment
+  labels:
+    app: some-private
+  namespace: ingress-sample
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: some-private
+  template:
+    metadata:
+      labels:
+        app: some-private
+    spec:
+      containers:
+      - image: 044403692004.dkr.ecr.ap-northeast-2.amazonaws.com/snft-solana-api
+        imagePullPolicy: Always
+        name: some-private
+        ports:
+        - containerPort: 5000
+          protocol: TCP
+        readinessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+      nodeSelector:
+        nodegroup-type: "managed-frontend-workloads"
+---   
+apiVersion: v1
+kind: Service
+metadata:
+  name: some-private-nodeport-svc
+  namespace: nodeport-sample
+spec:
+  selector:
+    app: some-private
+  type: NodePort
+  ports:
+   -  protocol: TCP
+      nodePort: 30081
+      port: 8080
+      targetPort: 5000
