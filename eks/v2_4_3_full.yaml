@@ -728,7 +728,7 @@ spec:
     spec:
       containers:
       - args:
-        - --cluster-name=Tony-Test
+        - --cluster-name=Tony-Test-Light
         - --ingress-class=alb
         image: amazon/aws-alb-ingress-controller:v2.4.3
         livenessProbe:
