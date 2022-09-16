@@ -288,7 +288,7 @@ curl -sS -u 'imiml:!Pasword123' \
 '
 ```
 
-그 후, `fluentbit.yml`을 실행시켜서 Daemonset를 세팅해준다. **데몬셋이기 때문에 추후에 노드가 늘어나도 자동으로 생겨나며 관리됨.**
+그 후, [`fluentbit.yml`](https://www.eksworkshop.com/intermediate/230_logging/deploy.files/fluentbit.yaml)을 실행시켜서 Daemonset를 세팅해준다. **데몬셋이기 때문에 추후에 노드가 늘어나도 자동으로 생겨나며 관리됨.**
 
 ```
 kubectl apply -f ./fluentbit.yml
