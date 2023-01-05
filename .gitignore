@@ -1,2 +1,4 @@
-
+.terraform.*
+terraform.tfstate*
 .DS_Store
+*.0_x5
