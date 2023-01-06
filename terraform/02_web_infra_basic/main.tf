@@ -31,7 +31,7 @@ resource "aws_instance" "web" {
     data.aws_security_group.default.id
   ]
   tags = {
-    Name = "tony_web_server"
+    Name = "tony_web"
   }
 }
 

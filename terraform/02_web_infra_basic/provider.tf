@@ -10,11 +10,11 @@ terraform {
     }
   }
   backend "s3" {
-    bucket = "tony-terraform-state1"
+    bucket = "tony-terraform-state01"
     key = "terraform.tfstate"
     region = "ap-northeast-2"
     encrypt = true
-    dynamodb_table = "TerraformStateLock"
+    dynamodb_table = "tony-terraform-state-lock"
     acl = "bucket-owner-full-control"
   }
 }
