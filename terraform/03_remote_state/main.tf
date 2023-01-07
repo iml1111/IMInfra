@@ -55,5 +55,5 @@ resource "aws_s3_bucket_versioning" "terraform_state_versioning" {
 resource "aws_s3_bucket_logging" "terraform_state_logging" {
   bucket = aws_s3_bucket.terraform_state.id
   target_bucket = aws_s3_bucket.terraform_logs.id
-  target_prefix = "log"
+  target_prefix = "log/"
 }

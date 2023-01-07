@@ -35,20 +35,17 @@ resource "aws_instance" "web" {
   }
 }
 
-# resource "aws_db_instance" "web_db" {
-#   allocated_storage = 8
-#   engine = "mysql"
-#   engine_version = "5.6.35"
-#   identifier = "tony_web_db_id"
-#   instance_class = "db.t2.micro"
-#   db_name = "tony_web_db_name"
-#   username = "admin"
-#   password = "tony1234"
-#   publicly_accessible = true
-#   skip_final_snapshot = true
-#   tags = "Optional"
-#   timezone = "Optional"
-  
-#   vpc_security_group_ids = "Optional"
-#   s3_import = "Optional"
-# }
+resource "aws_db_instance" "web_db" {
+  allocated_storage = 8
+  engine = "mysql"
+  identifier = "tonydb01"
+  instance_class = "db.t2.micro"
+  db_name = "tony_web_db_name"
+  username = "admin"
+  password = "tony1234"
+  publicly_accessible = true
+  skip_final_snapshot = true
+  tags = {
+    Name = "tony_web_db"
+  }
+}
