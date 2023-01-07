@@ -38,6 +38,7 @@ resource "aws_instance" "web" {
 resource "aws_db_instance" "web_db" {
   allocated_storage = 8
   engine = "mysql"
+  # rds 대시보드에 뜨는 이름
   identifier = "tonydb01"
   instance_class = "db.t2.micro"
   db_name = "tony_web_db_name"
