@@ -22,8 +22,7 @@ data "aws_security_group" "default" {
 }
 
 resource "aws_instance" "web" {
-  # amzn2-ami-hvm-2.0.20200207.1-x86_64-gp2
-  ami = "ami-0a93a08544874b3b7"
+  ami = "ami-003bb1772f36a39a3" # 20.04 LTS
   instance_type = "t2.micro"
   key_name = aws_key_pair.web_admin.key_name
   vpc_security_group_ids = [
