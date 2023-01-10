@@ -16,7 +16,7 @@ spec:
         app: hello-flask
     spec:
       containers:
-      - image: iml1111/hello-flask:latest
+      - image: 044403692004.dkr.ecr.ap-northeast-2.amazonaws.com/hello-flask
         imagePullPolicy: Always
         name: hello-flask
         resources:
@@ -36,4 +36,4 @@ spec:
           initialDelaySeconds: 15
           periodSeconds: 20
       nodeSelector:
-        nodegroup-type: "frontend-node-group"
+        nodegroup-type: "backend-node-group"

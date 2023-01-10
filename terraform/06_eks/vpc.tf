@@ -59,66 +59,6 @@ module "vpc_endpoints" {
       service = "s3"
       service_type    = "Gateway"
       tags = { Name = "${var.vpc_name}-s3-vpc-endpoint" }
-    },
-    ecr_dkr = {
-      service             = "ecr.dkr"
-      private_dns_enabled = true
-      subnet_ids          = module.vpc.private_subnets
-      policy              = data.aws_iam_policy_document.generic_endpoint_policy.json
-      tags = { Name = "${var.vpc_name}-ecr-vpc-endpoint" }
-    },
-    dynamodb = {
-      service         = "dynamodb"
-      service_type    = "Gateway"
-      route_table_ids = flatten([
-          module.vpc.intra_route_table_ids, 
-          module.vpc.private_route_table_ids, 
-          module.vpc.public_route_table_ids
-      ])
-      policy          = data.aws_iam_policy_document.dynamodb_endpoint_policy.json
-      tags = { Name = "${var.vpc_name}-dynamodb-vpc-endpoint" }
-    },
-  }
-}
-
-data "aws_iam_policy_document" "generic_endpoint_policy" {
-  statement {
-    effect    = "Deny"
-    actions   = ["*"]
-    resources = ["*"]
-
-    principals {
-      type        = "*"
-      identifiers = ["*"]
-    }
-
-    condition {
-      test     = "StringNotEquals"
-      variable = "aws:SourceVpc"
-
-      values = [module.vpc.vpc_id]
     }
   }
 }
-
-data "aws_iam_policy_document" "dynamodb_endpoint_policy" {
-  statement {
-    effect    = "Deny"
-    actions   = ["dynamodb:*"]
-    resources = ["*"]
-
-    principals {
-      type        = "*"
-      identifiers = ["*"]
-    }
-
-    condition {
-      test     = "StringNotEquals"
-      variable = "aws:sourceVpce"
-
-      values = [module.vpc.vpc_id]
-    }
-  }
-}
-
-

@@ -169,6 +169,7 @@ module "eks" {
       labels = {
         Stage = "dev"
         Author = var.author
+        nodegroup-type = "frontend-node-group"
       }
     }
 
@@ -190,6 +191,7 @@ module "eks" {
       labels = {
         Stage = "dev"
         Author = var.author
+        nodegroup-type = "backend-node-group"
       }
     }
   }
