@@ -3,3 +3,6 @@ terraform.tfstate*
 .DS_Store
 *.0_x5
 *.0_x4
+*.1_x5
+*.4_x5
+*/.terraform/*
