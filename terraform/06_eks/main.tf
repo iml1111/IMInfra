@@ -9,6 +9,9 @@ locals {
     Author = var.author
   }
   stage = "dev"
+  # Nodegroup Desized size
+  frontend_nodegroup_desired_size = 2
+  backend_nodegroup_desired_size = 2
 }
 
 data "aws_availability_zones" "available" {}
@@ -108,7 +111,7 @@ module "eks" {
       to_port     = 0
       type        = "ingress"
       self        = true
-    }
+    },
     ingress_source_security_group_id = {
       description              = "Ingress from another computed security group"
       protocol                 = "tcp"
@@ -116,6 +119,22 @@ module "eks" {
       to_port                  = 22
       type                     = "ingress"
       source_security_group_id = aws_security_group.default.id
+    },
+    metrics-server_ingress = {
+      description                   = "communication between control plane and the metrics-server endpoint"
+      protocol                      = "tcp"
+      from_port                     = "4443"
+      to_port                       = "4443"
+      type                          = "ingress"
+      source_cluster_security_group = true
+    },
+    metrics-server_pod_ingress = {
+      description = "communication between the metrics-server pod and the kubelet running on each worker node"
+      protocol    = "tcp"
+      from_port   = "10250"
+      to_port     = "10250"
+      type        = "ingress"
+      self        = true
     }
   }
 
@@ -140,7 +159,7 @@ module "eks" {
 
       min_size     = 1
       max_size     = 4
-      desired_size = 3
+      desired_size = local.frontend_nodegroup_desired_size
       disk_size = 20
 
       update_config = {
@@ -161,7 +180,7 @@ module "eks" {
 
       min_size     = 1
       max_size     = 4
-      desired_size = 3
+      desired_size = local.backend_nodegroup_desired_size
       disk_size = 20
 
       update_config = {
@@ -174,35 +193,6 @@ module "eks" {
       }
     }
   }
-
-  # Fargate Profile(s)
-  # Create a new cluster where both an identity provider and Fargate profile is created
-  # will result in conflicts since only one can take place at a time
-  # fargate_profiles = {
-  #   default = {
-  #     name = "default"
-  #     selectors = [
-  #       {
-  #         namespace = "kube-system"
-  #         labels = {
-  #           k8s-app = "kube-dns"
-  #         }
-  #       },
-  #       {
-  #         namespace = "default"
-  #       }
-  #     ]
-
-  #     tags = {
-  #       Author = var.author
-  #     }
-
-  #     timeouts = {
-  #       create = "20m"
-  #       delete = "20m"
-  #     }
-  #   }
-  # }
 
   # OIDC Identity provider
   cluster_identity_providers = {
@@ -226,6 +216,40 @@ module "eks" {
   tags = local.tags
 
 }
+# https://github.com/bryantbiggs/eks-desired-size-hack
+resource "null_resource" "update_frontend_desired_size" {
+  triggers = {
+    desired_size = local.frontend_nodegroup_desired_size
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+
+    command     = <<-EOT
+      aws eks update-nodegroup-config --cluster-name ${module.eks.cluster_name} --nodegroup-name ${element(split(":", module.eks.eks_managed_node_groups["frontend"].node_group_id), 1)} --scaling-config desiredSize=${local.frontend_nodegroup_desired_size}
+    EOT
+  }
+
+  depends_on = [
+    module.eks
+  ]
+}
+resource "null_resource" "update_backend_desired_size" {
+  triggers = {
+    desired_size = local.backend_nodegroup_desired_size
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+
+    command     = <<-EOT
+      aws eks update-nodegroup-config --cluster-name ${module.eks.cluster_name} --nodegroup-name ${element(split(":", module.eks.eks_managed_node_groups["backend"].node_group_id), 1)} --scaling-config desiredSize=${local.backend_nodegroup_desired_size}
+    EOT
+  }
+  depends_on = [
+    module.eks
+  ]
+}
 
 resource "aws_iam_policy" "additional" {
   name = "${var.cluster_name}-additional"
@@ -244,7 +268,6 @@ resource "aws_iam_policy" "additional" {
   })
 }
 
-
 module "kms" {
   source  = "terraform-aws-modules/kms/aws"
   version = "1.3.0"
@@ -256,3 +279,4 @@ module "kms" {
 
   tags = local.tags
 }
+

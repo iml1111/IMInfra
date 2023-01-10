@@ -42,41 +42,83 @@ module "vpc" {
   tags = merge(local.tags, { Name = var.vpc_name })
 }
 
+
 # VPC Endpoint
-
-resource "aws_vpc_endpoint" "s3" {
-  vpc_id            = module.vpc.vpc_id
-  service_name      = data.aws_vpc_endpoint_service.s3.service_name
-  vpc_endpoint_type = "Interface"
-  subnet_ids          = module.vpc.private_subnets
-  private_dns_enabled = false
-
-  tags = merge(local.tags, { Name = "${var.cluster_name}-s3-endpoint" })
+data "aws_security_group" "default" {
+  name   = "default"
+  vpc_id = module.vpc.vpc_id
 }
+module "vpc_endpoints" {
+  source = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
 
+  vpc_id = module.vpc.vpc_id
+  security_group_ids = [data.aws_security_group.default.id]
 
-resource "aws_vpc_endpoint" "ecr" {
-  vpc_id            = module.vpc.vpc_id 
-  service_name      = data.aws_vpc_endpoint_service.ecr.service_name
-  vpc_endpoint_type = "Interface"
-  subnet_ids          = module.vpc.private_subnets
-  private_dns_enabled = false
-
-  tags = merge(local.tags, { Name = "${var.cluster_name}-ecr-endpoint" })
-}
-
-data "aws_vpc_endpoint_service" "s3" {
-  service_type = "Interface"
-  filter {
-    name   = "service-name"
-    values = ["*s3"]
+  endpoints = {
+    s3 = {
+      service = "s3"
+      service_type    = "Gateway"
+      tags = { Name = "${var.vpc_name}-s3-vpc-endpoint" }
+    },
+    ecr_dkr = {
+      service             = "ecr.dkr"
+      private_dns_enabled = true
+      subnet_ids          = module.vpc.private_subnets
+      policy              = data.aws_iam_policy_document.generic_endpoint_policy.json
+      tags = { Name = "${var.vpc_name}-ecr-vpc-endpoint" }
+    },
+    dynamodb = {
+      service         = "dynamodb"
+      service_type    = "Gateway"
+      route_table_ids = flatten([
+          module.vpc.intra_route_table_ids, 
+          module.vpc.private_route_table_ids, 
+          module.vpc.public_route_table_ids
+      ])
+      policy          = data.aws_iam_policy_document.dynamodb_endpoint_policy.json
+      tags = { Name = "${var.vpc_name}-dynamodb-vpc-endpoint" }
+    },
   }
 }
 
-data "aws_vpc_endpoint_service" "ecr" {
-  service_type = "Interface"
-  filter {
-    name   = "service-name"
-    values = ["*ecr.dkr*"]
+data "aws_iam_policy_document" "generic_endpoint_policy" {
+  statement {
+    effect    = "Deny"
+    actions   = ["*"]
+    resources = ["*"]
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+
+    condition {
+      test     = "StringNotEquals"
+      variable = "aws:SourceVpc"
+
+      values = [module.vpc.vpc_id]
+    }
   }
 }
+
+data "aws_iam_policy_document" "dynamodb_endpoint_policy" {
+  statement {
+    effect    = "Deny"
+    actions   = ["dynamodb:*"]
+    resources = ["*"]
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+
+    condition {
+      test     = "StringNotEquals"
+      variable = "aws:sourceVpce"
+
+      values = [module.vpc.vpc_id]
+    }
+  }
+}
+
+

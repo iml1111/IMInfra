@@ -19,7 +19,7 @@ variable "aws_iam_username" {
 variable "vpc_name" {
   type = string
   description = "VPC Name"
-  default = "tony-06-eks-vpc"
+  default = "tony-06-vpc"
 }
 
 variable "cluster_name" {
