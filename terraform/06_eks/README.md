@@ -27,6 +27,7 @@ kubectl apply -f ./sample.yml
 ```
 # TODO
 - 서비스어카운트 자동화각 (07.data.tf도 같이 보자)
+- 로드밸런서, 클러스터오토스케일러, 필요하면 더 알아보자.
 https://github.com/terraform-aws-modules/terraform-aws-iam/tree/v5.10.0/modules/iam-role-for-service-accounts-eks
 
 
