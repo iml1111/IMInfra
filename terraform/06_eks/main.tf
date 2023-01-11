@@ -18,25 +18,6 @@ data "aws_availability_zones" "available" {}
 data "aws_caller_identity" "current" {}
 
 
-resource "aws_security_group" "default" {
-  name = "${var.cluster_name}-default"
-  vpc_id = module.vpc.vpc_id
-  description = "EKS Default security group"
-  # SSH Intertal Facing
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-    cidr_blocks = [
-      "10.0.0.0/8",
-      "172.16.0.0/12",
-      "192.168.0.0/16",
-    ]
-  }
-  tags = merge(local.tags, { Name = "${var.cluster_name}-sg" })
-}
-
-
 # EKS Cluster & NodeGroup
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
@@ -90,7 +71,7 @@ module "eks" {
       from_port                  = 1025
       to_port                    = 65535
       type                       = "ingress"
-      source_node_security_group = true
+      source_security_group_id = aws_security_group.default.id
     }
     ingress_source_security_group_id = {
       description              = "Ingress from another computed security group"
@@ -103,40 +84,41 @@ module "eks" {
   }
 
   # Extend node-to-node security group rules
-  node_security_group_additional_rules = {
-    ingress_self_all = {
-      description = "Node to node all ports/protocols"
-      protocol    = "-1"
-      from_port   = 0
-      to_port     = 0
-      type        = "ingress"
-      self        = true
-    },
-    ingress_source_security_group_id = {
-      description              = "Ingress from another computed security group"
-      protocol                 = "tcp"
-      from_port                = 22
-      to_port                  = 22
-      type                     = "ingress"
-      source_security_group_id = aws_security_group.default.id
-    },
-    metrics-server_ingress = {
-      description                   = "communication between control plane and the metrics-server endpoint"
-      protocol                      = "tcp"
-      from_port                     = "4443"
-      to_port                       = "4443"
-      type                          = "ingress"
-      source_cluster_security_group = true
-    },
-    metrics-server_pod_ingress = {
-      description = "communication between the metrics-server pod and the kubelet running on each worker node"
-      protocol    = "tcp"
-      from_port   = "10250"
-      to_port     = "10250"
-      type        = "ingress"
-      self        = true
-    }
-  }
+  create_node_security_group = false
+  # node_security_group_additional_rules = {
+  #   ingress_self_all = {
+  #     description = "Node to node all ports/protocols"
+  #     protocol    = "-1"
+  #     from_port   = 0
+  #     to_port     = 0
+  #     type        = "ingress"
+  #     self        = true
+  #   },
+  #   ingress_source_security_group_id = {
+  #     description              = "Ingress from another computed security group"
+  #     protocol                 = "tcp"
+  #     from_port                = 22
+  #     to_port                  = 22
+  #     type                     = "ingress"
+  #     source_security_group_id = aws_security_group.default.id
+  #   },
+  #   metrics-server_ingress = {
+  #     description                   = "communication between control plane and the metrics-server endpoint"
+  #     protocol                      = "tcp"
+  #     from_port                     = "4443"
+  #     to_port                       = "4443"
+  #     type                          = "ingress"
+  #     source_cluster_security_group = true
+  #   },
+  #   metrics-server_pod_ingress = {
+  #     description = "communication between the metrics-server pod and the kubelet running on each worker node"
+  #     protocol    = "tcp"
+  #     from_port   = "10250"
+  #     to_port     = "10250"
+  #     type        = "ingress"
+  #     self        = true
+  #   }
+  # }
 
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = {

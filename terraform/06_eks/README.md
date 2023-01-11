@@ -6,11 +6,15 @@
 # setup
 terraform apply -auto-approve
 aws eks --region ap-northeast-2 update-kubeconfig --name $(terraform output -raw cluster_name)
-# metric-server
-kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
-# aws-lb serviceaccounts
+# cert-manager
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.10.1/cert-manager.yaml
-kubectl apply -f https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.3/v2_4_3_full.yaml
+#k9s dashboard
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
+kubectl apply -f eks-admin-service-account.yaml
+kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep eks-admin | awk '{print $1}')
+kubectl proxy
+http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+
 
 # test 
 kubectl get sa -A
@@ -18,7 +22,6 @@ kubectl create namespace ingress-sample
 kubectl apply -f ./sample.yml
 ```
 # TODO
-- 로드 밸런서 연동이 안됨. 이것도 헬름으로 바꾸는게 좋을려나?
 
 # References
 - https://developer.hashicorp.com/terraform/tutorials/kubernetes/eks
@@ -29,6 +32,9 @@ kubectl apply -f ./sample.yml
 ## IAM Service Account
 - https://github.com/terraform-aws-modules/terraform-aws-iam/tree/v5.10.0/modules/iam-role-for-service-accounts-eks
 - https://github.com/terraform-aws-modules/terraform-aws-iam/blob/v5.10.0/examples/iam-role-for-service-accounts-eks/main.tf
+
+## aws-load-balancer-controller
+- https://andrewtarry.com/posts/terraform-eks-alb-setup/
 
 ## Karpenter
 - https://karpenter.sh/v0.22.0/getting-started/getting-started-with-terraform/
