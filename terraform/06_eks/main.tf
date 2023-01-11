@@ -215,7 +215,7 @@ module "eks" {
     var.aws_account
   ]
 
-  tags = local.tags
+  tags = merge(local.tags, { "karpenter.sh/discovery" = var.cluster_name })
 
 }
 # https://github.com/bryantbiggs/eks-desired-size-hack
