@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-flask-deployment
+  labels:
+    app: hello-flask
+  namespace: ingress-sample
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hello-flask
+  template:
+    metadata:
+      labels:
+        app: hello-flask
+    spec:
+      containers:
+      - image: 044403692004.dkr.ecr.ap-northeast-2.amazonaws.com/hello-flask
+        imagePullPolicy: Always
+        name: hello-flask
+        resources:
+          requests:
+            cpu: "100m"
+        ports:
+        - containerPort: 5000
+          protocol: TCP
+        readinessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+      nodeSelector:
+        nodegroup-type: "backend-node-group"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-flask-nodeport-svc
+  namespace: ingress-sample
+spec:
+  selector:
+    app: hello-flask
+  type: NodePort
+  ports:
+   -  protocol: TCP
+      nodePort: 30080
+      port: 8080
+      targetPort: 5000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: "hello-flask-ingress"
+  namespace: "ingress-sample"
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/load-balancer-name: hello-flask-ingress
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: instance
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: "hello-flask-nodeport-svc"
+                port:
+                  number: 8080
